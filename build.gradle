@@ -1,0 +1,31 @@
+plugins {
+    id 'java'
+}
+
+group = 'org.example'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Lombok
+    implementation 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor 'org.projectlombok:lombok:1.18.20'
+
+    // Jackson
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.1'
+
+    // Apache commons lang
+    implementation 'org.apache.commons:commons-lang3:3.13.0'
+
+    // JavaFX Swing: https://mvnrepository.com/artifact/org.openjfx/javafx-swing
+//    implementation 'org.openjfx:javafx-swing:19'
+}
+
+// Reference: https://docs.gradle.org/current/javadoc/org/gradle/process/JavaExecSpec.html
+tasks.register('run', JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    getMainClass().set('org.example.MazeGame')
+}
