@@ -19,9 +19,6 @@ dependencies {
 
     // Apache commons lang
     implementation 'org.apache.commons:commons-lang3:3.13.0'
-
-    // JavaFX Swing: https://mvnrepository.com/artifact/org.openjfx/javafx-swing
-//    implementation 'org.openjfx:javafx-swing:19'
 }
 
 // Reference: https://docs.gradle.org/current/javadoc/org/gradle/process/JavaExecSpec.html
