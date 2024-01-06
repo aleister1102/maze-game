@@ -1,14 +1,11 @@
 package org.example;
 
-import lombok.Builder;
-import lombok.Data;
-
 import javax.swing.*;
 
 public class MazeGame extends JFrame {
 
   public MazeGame() {
-    add(new Model());
+    super.add(new Model());
   }
 
   public static void main(String[] args) {

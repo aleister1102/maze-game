@@ -2,6 +2,8 @@ package org.example;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,6 +16,7 @@ import java.net.URL;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class Model extends JPanel implements ActionListener {
+
   private Dimension dimension;
   private final Font smallFont = new Font("Arial", Font.BOLD, 14);
   private boolean isRunning = false;
@@ -36,12 +39,6 @@ public class Model extends JPanel implements ActionListener {
   private int pacman_x, pacman_y, pacman_dx, pacman_dy;
   private int req_dx, req_dy;
 
-  private final int[] validSpeeds = {1, 2, 3, 4, 6, 8};
-  private final int maxSpeed = 6;
-  private int currentSpeed = 3;
-  private short[] screenData;
-  private Timer timer;
-
   // 0: blue obstacles, 16: white dots
   // 1: left border, 2: top border, 4: right border, 8: bottom border
   private final short[] mapData = {
@@ -62,40 +59,37 @@ public class Model extends JPanel implements ActionListener {
     25, 24, 24, 24, 26, 24, 24, 24, 24, 24, 24, 24, 24, 24, 28
   };
 
+  private final int[] validSpeeds = {1, 2, 3, 4, 6, 8};
+  private final int maxSpeed = 6;
+
+  private int currentSpeed = 3;
+  private short[] screenData;
+  private Timer timer;
+
+  private final Logger logger = LogManager.getLogger(Model.class);
+
   public Model() {
+
     loadImages();
     initVariables();
-    addKeyListener(new TAdapter());
-    setFocusable(true);
+    super.addKeyListener(new TAdapter());
+    super.setFocusable(true);
     initGame();
   }
 
   private void loadImages() {
-    URL heartImageUrl = this.getClass().getResource("src/main/resources/images/heart.png");
-    URL ghostImageUrl = this.getClass().getResource("src/main/resources/images/ghost.gif");
-    URL upImageUrl = this.getClass().getResource("src/main/resources/images/up.gif");
-    URL downImageUrl = this.getClass().getResource("src/main/resources/images/down.gif");
-    URL leftImageUrl = this.getClass().getResource("src/main/resources/images/left.gif");
-    URL rightImageUrl = this.getClass().getResource("src/main/resources/images/right.gif");
 
-    if (heartImageUrl == null ||
-      ghostImageUrl == null ||
-      upImageUrl == null ||
-      downImageUrl == null ||
-      leftImageUrl == null ||
-      rightImageUrl == null
-    ) return;
-
-    heart = new ImageIcon(heartImageUrl).getImage();
-    ghost = new ImageIcon(ghostImageUrl).getImage();
-    up = new ImageIcon(upImageUrl).getImage();
-    down = new ImageIcon(downImageUrl).getImage();
-    left = new ImageIcon(leftImageUrl).getImage();
-    right = new ImageIcon(rightImageUrl).getImage();
+    down = new ImageIcon("src/main/resources/images/down.gif").getImage();
+    up = new ImageIcon("src/main/resources/images/up.gif").getImage();
+    left = new ImageIcon("src/main/resources/images/left.gif").getImage();
+    right = new ImageIcon("src/main/resources/images/right.gif").getImage();
+    ghost = new ImageIcon("src/main/resources/images/ghost.gif").getImage();
+    heart = new ImageIcon("src/main/resources/images/heart.png").getImage();
   }
 
   // TODO: explain those variables
   private void initVariables() {
+
     screenData = new short[N_BLOCKS * N_BLOCKS];
     dimension = new Dimension(400, 600);
     dx = new int[4];
@@ -111,15 +105,20 @@ public class Model extends JPanel implements ActionListener {
   }
 
   private void initGame() {
+
     lives = 3;
     score = 0;
-//    initLevel();
+    initLevel();
     N_GHOSTS = 6;
     currentSpeed = 3;
   }
 
   private void initLevel() {
-    System.arraycopy(mapData, 0, screenData, 0, N_BLOCKS * N_BLOCKS - 1);
+    for (int i = 0; i < N_BLOCKS * N_BLOCKS; i++) {
+      screenData[i] = mapData[i];
+    }
+
+    continueLevel();
   }
 
   private void playGame(Graphics2D graphics2D) {
@@ -363,7 +362,9 @@ public class Model extends JPanel implements ActionListener {
     } else {
       showIntroScreen(graphics2D);
     }
+
     Toolkit.getDefaultToolkit().sync();
+    graphics2D.dispose();
   }
 
   private void drawMaze(Graphics2D graphics2D) {
@@ -430,6 +431,7 @@ public class Model extends JPanel implements ActionListener {
   // TODO: learn about key adapter
   class TAdapter extends KeyAdapter {
 
+    @Override
     public void keyPressed(KeyEvent e) {
 
       int key = e.getKeyCode();
@@ -450,10 +452,11 @@ public class Model extends JPanel implements ActionListener {
           req_dy = 1;
         } else if (key == KeyEvent.VK_ESCAPE && timer.isRunning()) {
           isRunning = false;
-        } else {
-          if (key == KeyEvent.VK_SPACE) {
-            initGame();
-          }
+        }
+      } else {
+        if (key == KeyEvent.VK_SPACE) {
+          isRunning = true;
+          initGame();
         }
       }
     }
@@ -461,7 +464,7 @@ public class Model extends JPanel implements ActionListener {
 
   @Override
   public void actionPerformed(ActionEvent e) {
-
+    super.repaint();
   }
 
 }
