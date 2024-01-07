@@ -138,9 +138,9 @@ public class GamePanel extends JPanel implements ActionListener {
       for (int x = 0; x < SCREEN_WIDTH; x += Maze.BLOCK_SIZE) {
         short block = maze.getScreenDataAtIndex(blockIndex);
 
-        maze.drawObstacle(graphics2D, x, y, blockIndex);
+        //maze.drawObstacle(graphics2D, x, y, blockIndex);
         maze.drawObstacleBorders(graphics2D, x, y, block);
-        maze.drawWhiteDot(graphics2D, x, y, block);
+        //maze.drawWhiteDot(graphics2D, x, y, block);
 
         blockIndex++;
       }
@@ -166,7 +166,7 @@ public class GamePanel extends JPanel implements ActionListener {
 
     if (!pacman.isDying()) {
       movePacman(graphics2D);
-      moveGhosts(graphics2D);
+      //moveGhosts(graphics2D);
       checkMaze();
     } else {
       death();
@@ -188,14 +188,14 @@ public class GamePanel extends JPanel implements ActionListener {
 
       // check for valid move request
       if (pacman.getRequestDeltaX() != 0 || pacman.getRequestDeltaY() != 0) {
-        if (pacman.isValidMoveRequest(block)) {
+        if (maze.isHavingValidMoveRequest(pacman, blockIndex)) {
           pacman.setDeltaX(pacman.getRequestDeltaX());
           pacman.setDeltaY(pacman.getRequestDeltaY());
         }
       }
 
       // check for standstill
-      if (pacman.isInvalidMoveRequest(block)) {
+      if (maze.isHavingInvalidMoveRequest(pacman, blockIndex)) {
         // if can't move anymore, place pacman at the origin
         pacman.setDeltaX(0);
         pacman.setDeltaY(0);
@@ -217,32 +217,32 @@ public class GamePanel extends JPanel implements ActionListener {
 
         count = 0;
 
-        if ((maze.getScreenData()[pos] & 1) == 0 && ghost.getDeltaX() != 1) {
+        if ((maze.getScreenDataAtIndex(pos) & 1) == 0 && ghost.getDeltaX() != 1) {
           dx[count] = -1;
           dy[count] = 0;
           count++;
         }
 
-        if ((maze.getScreenData()[pos] & 2) == 0 && ghost.getDeltaY() != 1) {
+        if ((maze.getScreenDataAtIndex(pos) & 2) == 0 && ghost.getDeltaY() != 1) {
           dx[count] = 0;
           dy[count] = -1;
           count++;
         }
 
-        if ((maze.getScreenData()[pos] & 4) == 0 && ghost.getDeltaX() != -1) {
+        if ((maze.getScreenDataAtIndex(pos) & 4) == 0 && ghost.getDeltaX() != -1) {
           dx[count] = 1;
           dy[count] = 0;
           count++;
         }
 
-        if ((maze.getScreenData()[pos] & 8) == 0 && ghost.getDeltaY() != -1) {
+        if ((maze.getScreenDataAtIndex(pos) & 8) == 0 && ghost.getDeltaY() != -1) {
           dx[count] = 0;
           dy[count] = 1;
           count++;
         }
 
         if (count == 0) {
-          if ((maze.getScreenData()[pos] & 15) == 15) {
+          if ((maze.getScreenDataAtIndex(pos) & 15) == 15) {
             ghost.setDeltaX(0);
             ghost.setDeltaY(0);
           }
@@ -281,7 +281,7 @@ public class GamePanel extends JPanel implements ActionListener {
 
     while (i < Maze.ROWS * Maze.COLUMNS && finished) {
 
-      if ((maze.getScreenData()[i]) != 0) {
+      if (maze.getScreenData()[i] != 0) {
         finished = false;
       }
 

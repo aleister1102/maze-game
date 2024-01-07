@@ -60,21 +60,4 @@ public class Pacman extends Actor {
     }
   }
 
-  public boolean isValidMoveRequest(int currentBlock) {
-
-    return !((getRequestDeltaX() == -1 && getRequestDeltaY() == 0 && (currentBlock & 1) != 0) // if move to left, current position should not
-      // have left border
-      || (getRequestDeltaX() == 1 && getRequestDeltaY() == 0 && (currentBlock & 4) != 0) // if move to right, current position should not
-      // have right border
-      || (getRequestDeltaX() == 0 && getRequestDeltaY() == -1 && (currentBlock & 2) != 0) // if move to top, current position should not
-      // have top border
-      || (getRequestDeltaX() == 0 && getRequestDeltaY() == 1 && (currentBlock & 8) != 0) // if move to bottom, current position should not
-      // have bottom border
-    );
-  }
-
-  public boolean isInvalidMoveRequest(int currentBlock) {
-    return !isValidMoveRequest(currentBlock);
-  }
-
 }
