@@ -46,6 +46,7 @@ public class Pacman extends Actor {
     this.setDying(false);
   }
 
+  @Override
   protected void draw(Graphics2D graphics2D, ImageObserver observer) {
 
     // change image based on pacman direction
