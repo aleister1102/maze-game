@@ -33,7 +33,7 @@ public class GamePanel extends JPanel implements ActionListener {
   private Maze maze;
 
   private final int PACMAN_LIVES = 3;
-  private final int INITIAL_SPEED = Actor.VALID_SPEEDS[2];
+  private final int INITIAL_SPEED = Actor.VALID_SPEEDS[3];
   private final int MAX_SPEED = Actor.getMaxSpeed();
   private Pacman pacman;
 
@@ -63,7 +63,7 @@ public class GamePanel extends JPanel implements ActionListener {
 
   private void initialize() {
 
-    dimension = new Dimension(400, 600);
+    dimension = new Dimension(500, 550);
     textFont = new Font("Arial", Font.BOLD, 14);
 
     maze = new Maze();

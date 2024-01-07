@@ -26,8 +26,8 @@ public class Ghost extends Actor {
 
   public void initialize(int maxSpeed) {
     // set ghost position
-    this.setX(8 * Maze.BLOCK_SIZE);
-    this.setY(8 * Maze.BLOCK_SIZE);
+    this.setX(9 * Maze.BLOCK_SIZE);
+    this.setY(9 * Maze.BLOCK_SIZE);
 
     // random ghost speed
     int randomGhostSpeed = Actor.getRandomSpeed();

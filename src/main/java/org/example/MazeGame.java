@@ -14,7 +14,7 @@ public class MazeGame extends JFrame {
     MazeGame mazeGame = new MazeGame();
     mazeGame.setVisible(true);
     mazeGame.setTitle("Maze MazeGame");
-    mazeGame.setSize(380, 420);
+    mazeGame.setSize(500, 550);
     mazeGame.setDefaultCloseOperation(EXIT_ON_CLOSE);
     mazeGame.setLocationRelativeTo(null);
   }
