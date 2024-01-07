@@ -341,19 +341,19 @@ public class GamePanel extends JPanel implements ActionListener {
 
       if (isGameRunning) {
         // TODO: learn about key events
-        if (key == KeyEvent.VK_LEFT) {
+        if (key == KeyEvent.VK_A) {
           pacman.setRequestDeltaX(-1);
           pacman.setRequestDeltaY(0);
-        } else if (key == KeyEvent.VK_RIGHT) {
+        } else if (key == KeyEvent.VK_D) {
           pacman.setRequestDeltaX(1);
           pacman.setRequestDeltaY(0);
-        } else if (key == KeyEvent.VK_UP) {
+        } else if (key == KeyEvent.VK_W) {
           pacman.setRequestDeltaX(0);
           pacman.setRequestDeltaY(-1);
-        } else if (key == KeyEvent.VK_DOWN) {
+        } else if (key == KeyEvent.VK_S) {
           pacman.setRequestDeltaX(0);
           pacman.setRequestDeltaY(1);
-        } else if (key == KeyEvent.VK_ESCAPE && timer.isRunning()) {
+        } else if (key == KeyEvent.VK_Q && timer.isRunning()) {
           isGameRunning = false;
         }
       } else {
