@@ -109,7 +109,7 @@ public class Maze {
 
   public short getScreenDataAtIndex(int index) {
 
-    if (index > screenData.length - 1) {
+    if (index > screenData.length - 1 || index < 0) {
       return 0;
     }
 
@@ -118,7 +118,7 @@ public class Maze {
 
   public void setScreenDataAtIndex(int index, short value) {
 
-    if (index > screenData.length - 1) {
+    if (index > screenData.length - 1 || index < 0) {
       return;
     }
 

@@ -5,7 +5,7 @@ import javax.swing.*;
 public class MazeGame extends JFrame {
 
   public static final int screenWidth = 340;
-  public static final int screenHeight = 700;
+  public static final int screenHeight = 710;
 
   public MazeGame() {
 
