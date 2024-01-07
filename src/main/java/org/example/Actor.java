@@ -48,7 +48,7 @@ public abstract class Actor {
   protected abstract void draw(Graphics2D graphics2D, ImageObserver imageObserver);
 
   public int computeBlockIndexFromCurrentPosition() {
-    return getX() / Maze.BLOCK_SIZE + Maze.N_BLOCKS * (getY() / Maze.BLOCK_SIZE);
+    return getX() / Maze.BLOCK_SIZE + Maze.COLUMNS * (getY() / Maze.BLOCK_SIZE);
   }
 
 }

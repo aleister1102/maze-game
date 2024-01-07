@@ -4,6 +4,9 @@ import javax.swing.*;
 
 public class MazeGame extends JFrame {
 
+  public static final int screenWidth = 340;
+  public static final int screenHeight = 700;
+
   public MazeGame() {
 
     super.add(new GamePanel());
@@ -14,7 +17,7 @@ public class MazeGame extends JFrame {
     MazeGame mazeGame = new MazeGame();
     mazeGame.setVisible(true);
     mazeGame.setTitle("Maze MazeGame");
-    mazeGame.setSize(500, 550);
+    mazeGame.setSize(screenWidth, screenHeight);
     mazeGame.setDefaultCloseOperation(EXIT_ON_CLOSE);
     mazeGame.setLocationRelativeTo(null);
   }

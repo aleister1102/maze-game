@@ -37,8 +37,8 @@ public class Pacman extends Actor {
 
   public void initialize() {
 
-    this.setX(19 * Maze.BLOCK_SIZE);
-    this.setY(19 * Maze.BLOCK_SIZE);
+    this.setX(15 * Maze.BLOCK_SIZE);
+    this.setY(31 * Maze.BLOCK_SIZE);
     this.setDeltaX(0);
     this.setDeltaY(0);
     this.setRequestDeltaX(0);

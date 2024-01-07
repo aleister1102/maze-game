@@ -28,7 +28,8 @@ public class GamePanel extends JPanel implements ActionListener {
   private Font textFont;
   private Image heart;
 
-  private final int SCREEN_SIZE = Maze.N_BLOCKS * Maze.BLOCK_SIZE;
+  private final int SCREEN_HEIGHT = Maze.ROWS * Maze.BLOCK_SIZE;
+  private final int SCREEN_WIDTH = Maze.COLUMNS * Maze.BLOCK_SIZE;
 
   private Maze maze;
 
@@ -63,7 +64,7 @@ public class GamePanel extends JPanel implements ActionListener {
 
   private void initialize() {
 
-    dimension = new Dimension(500, 550);
+    dimension = new Dimension(MazeGame.screenWidth, MazeGame.screenHeight);
     textFont = new Font("Arial", Font.BOLD, 14);
 
     maze = new Maze();
@@ -133,8 +134,8 @@ public class GamePanel extends JPanel implements ActionListener {
     graphics2D.setStroke(new BasicStroke(5));
 
     short blockIndex = 0;
-    for (int y = 0; y < SCREEN_SIZE; y += Maze.BLOCK_SIZE) {
-      for (int x = 0; x < SCREEN_SIZE; x += Maze.BLOCK_SIZE) {
+    for (int y = 0; y < SCREEN_HEIGHT; y += Maze.BLOCK_SIZE) {
+      for (int x = 0; x < SCREEN_WIDTH; x += Maze.BLOCK_SIZE) {
         short block = maze.getScreenDataAtIndex(blockIndex);
 
         maze.drawObstacle(graphics2D, x, y, blockIndex);
@@ -149,7 +150,7 @@ public class GamePanel extends JPanel implements ActionListener {
   public void drawLives(Graphics2D graphics2D) {
 
     for (int i = 0; i < pacman.getLives(); i++) {
-      graphics2D.drawImage(heart, i * 28 + 8, SCREEN_SIZE + 1, this);
+      graphics2D.drawImage(heart, i * 28 + 8, SCREEN_HEIGHT + 1, this);
     }
   }
 
@@ -158,7 +159,7 @@ public class GamePanel extends JPanel implements ActionListener {
     graphics2D.setFont(textFont);
     graphics2D.setColor(new Color(5, 181, 79));
     String scoreString = String.format("Score: %s", scores);
-    graphics2D.drawString(scoreString, SCREEN_SIZE / 2 + 96, SCREEN_SIZE + 16);
+    graphics2D.drawString(scoreString, SCREEN_WIDTH / 2 + 96, SCREEN_HEIGHT + 16);
   }
 
   private void playGame(Graphics2D graphics2D) {
@@ -278,7 +279,7 @@ public class GamePanel extends JPanel implements ActionListener {
     int i = 0;
     boolean finished = true;
 
-    while (i < Maze.N_BLOCKS * Maze.N_BLOCKS && finished) {
+    while (i < Maze.ROWS * Maze.COLUMNS && finished) {
 
       if ((maze.getScreenData()[i]) != 0) {
         finished = false;
@@ -326,7 +327,8 @@ public class GamePanel extends JPanel implements ActionListener {
 
     String start = "Press SPACE to start";
     graphics2D.setColor(Color.yellow);
-    graphics2D.drawString(start, (SCREEN_SIZE) / 4, 150);
+    graphics2D.setFont(textFont);
+    graphics2D.drawString(start, SCREEN_WIDTH / 4 + 10, SCREEN_HEIGHT / 2);
   }
 
   // TODO: learn about key adapter
@@ -371,3 +373,4 @@ public class GamePanel extends JPanel implements ActionListener {
   }
 
 }
+
