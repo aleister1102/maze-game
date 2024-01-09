@@ -21,8 +21,8 @@ public class Bullet extends Actor {
     this();
     this.x = pacman.getX();
     this.y = pacman.getY();
-    this.speed = pacman.getSpeed() * SPEED_MULTIPLIER;
     this.direction = Direction.STAY;
+    this.speed = pacman.getSpeed() * SPEED_MULTIPLIER;
   }
 
   private void loadImages() {
@@ -35,28 +35,14 @@ public class Bullet extends Actor {
 
   @Override
   public void move(Graphics2D graphics, ImageObserver observer, Maze maze) {
+    boolean isMoving = this.isMoving();
+    boolean deltaChanged = updateDeltaBasedOnMoveRequest(maze);
+    boolean canMoveMore = this.canMoveMore();
 
-    if (this.x % Maze.BLOCK_SIZE == 0 && this.y % Maze.BLOCK_SIZE == 0) {
-      int blockIndex = computeBlockIndexFromCurrentPosition();
+    if (!isMoving) draw(graphics, observer);
+    else if (!deltaChanged) draw(graphics, observer);
+    else if (canMoveMore) drawAtNewPosition(graphics, observer);
 
-      // check for valid move request
-      if (requestDeltaX != 0 || requestDeltaY != 0) {
-        if (maze.isHavingValidMoveRequest(this, blockIndex)) {
-          deltaX = requestDeltaX;
-          deltaY = requestDeltaY;
-        } else {
-          deltaX = 0;
-          deltaY = 0;
-          hasCollisionWithWall = true;
-          stopMoving();
-          return;
-        }
-      }
-    }
-
-    if (isMoving()) {
-      redrawAtNewPosition(graphics, observer);
-    }
   }
 
   @Override

@@ -44,34 +44,30 @@ public class Pacman extends Actor {
     this.bullet = new Bullet(this);
   }
 
+  // TODO(BUG): sometimes can not move
   @Override
   public void move(Graphics2D graphics2D, ImageObserver imageObserver, Maze maze) {
+    boolean isMoving = this.isMoving();
+    boolean hasValidMoveRequest = updateDeltaBasedOnMoveRequest(maze);
+    boolean canMoveMore = this.canMoveMore();
 
-    // TODO: sometimes can not move
-    if (x % Maze.BLOCK_SIZE == 0 && y % Maze.BLOCK_SIZE == 0) {
-      // get current position of pacman
-      int blockIndex = computeBlockIndexFromCurrentPosition();
-
-      // check for valid move request
-      if (requestDeltaX != 0 || requestDeltaY != 0) {
-        if (maze.isHavingValidMoveRequest(this, blockIndex)) {
-          deltaX = requestDeltaX;
-          deltaY = requestDeltaY;
-        } else {
-          deltaX = 0;
-          deltaY = 0;
-        }
-      }
+    try {
+      Thread.sleep(100);
+      System.out.println("x: " + this.x + ", y: " + this.y);
+      System.out.println("move direction: " + this.direction);
+      System.out.println("Pacman::isMoving: " + isMoving);
+      System.out.println("Pacman::hasValidMoveRequest: " + hasValidMoveRequest);
+      System.out.println("Pacman::canMoveMore: " + canMoveMore);
+      System.out.println("-----------------------------------");
+    } catch (InterruptedException ignored) {
     }
 
-    // can not move if bullet is moving
-    if (isMoving() && canMoveMore() && !bullet.isMoving()) {
-      redrawAtNewPosition(graphics2D, imageObserver);
+    if (!isMoving || !hasValidMoveRequest) {
+      draw(graphics2D, imageObserver); // do not draw at new position if is not moving or has invalid move request
+    } else if (canMoveMore) {
+      drawAtNewPosition(graphics2D, imageObserver); // can not move if has not moved at least 1 block
     } else {
-      draw(graphics2D, imageObserver);
-      stopMoving();
-
-      bullet.move(graphics2D, imageObserver, maze);
+      this.stopMoving(); // stop moving if has moved 1 block
     }
   }
 
@@ -81,16 +77,10 @@ public class Pacman extends Actor {
     return this.cumulativeDeltaX < Maze.BLOCK_SIZE && this.cumulativeDeltaY < Maze.BLOCK_SIZE;
   }
 
-  @Override
-  public void draw(Graphics2D graphics2D, ImageObserver observer) {
-
-    super.draw(graphics2D, observer);
-    bullet.draw(graphics2D, observer);
-  }
-
   public void fire() {
-    // TODO: prevent firing bullet when opposite with a wall
-    // TODO: prevent firing when bullet has not moved at least 4 block
+    // TODO(FEAT): prevent firing when bullet has not moved at least 4 block
+    //if(!bullet.canMoveMore()) return;
+
     bullet.setHasCollisionWithWall(false);
 
     if (isMovingLeft()) {

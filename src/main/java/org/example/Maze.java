@@ -196,7 +196,15 @@ public class Maze {
     return (block & 8) != 0;
   }
 
-  public boolean isHavingValidMoveRequest(Actor actor, int blockIndex) {
+  protected boolean isCurrentPositionDivisibleByBlockSize(Actor actor) {
+    return actor.getX() % BLOCK_SIZE == 0 && actor.getY() % BLOCK_SIZE == 0;
+  }
+
+  protected int computeBlockIndexFromCurrentPosition(Actor actor) {
+    return actor.getX() / BLOCK_SIZE + COLUMNS * (actor.getY() / BLOCK_SIZE);
+  }
+
+  protected boolean isHavingValidMoveRequest(Actor actor, int blockIndex) {
 
     short currentBlock = getScreenDataAtIndex(blockIndex);
     short nextBlock = getScreenDataAtIndex(blockIndex + 1);

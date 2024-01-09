@@ -49,7 +49,6 @@ public class GamePanel extends JPanel implements ActionListener {
   public void paintComponent(Graphics g) {
 
     super.paintComponent(g);
-
     graphics2D = (Graphics2D) g;
     maze.draw(graphics2D, dimension);
 
@@ -65,6 +64,7 @@ public class GamePanel extends JPanel implements ActionListener {
 
   private void playGame(Graphics2D graphics2D) {
     pacman.move(graphics2D, this, maze);
+    //pacman.getBullet().move(graphics2D, this, maze);
   }
 
   private void showIntroScreen(Graphics2D graphics2D) {
