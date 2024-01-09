@@ -35,35 +35,45 @@ public abstract class Actor {
     return VALID_SPEEDS[randomSpeedIndex];
   }
 
-  public void move(Graphics2D graphics2D, ImageObserver observer) {
+  public void redrawAtNewPosition(Graphics2D graphics2D, ImageObserver observer) {
 
-    computeCurrentPosition();
+    // compute travel distance and update actor state
+    Pair<Integer, Integer> travelDistance = computeTravelDistance();
+    setNewPosition(travelDistance);
+    addToCumulativeDelta(travelDistance);
+
     draw(graphics2D, observer);
   }
 
-  private void computeCurrentPosition() {
-
-    this.setX(this.getX() + this.getSpeed() * this.getDeltaX());
-    this.setY(this.getY() + this.getSpeed() * this.getDeltaY());
-    this.cumulativeDeltaX += Math.abs(this.getSpeed() * this.getDeltaX());
-    this.cumulativeDeltaY += Math.abs(this.getSpeed() * this.getDeltaY());
-    System.out.println("cumulativeDeltaX: " + this.cumulativeDeltaX);
-    System.out.println("cumulativeDeltaY: " + this.cumulativeDeltaY);
+  private Pair<Integer, Integer> computeTravelDistance() {
+    Integer travelX = getSpeed() * getDeltaX();
+    Integer travelY = getSpeed() * getDeltaY();
+    return new Pair<>(travelX, travelY);
   }
 
-  protected abstract void draw(Graphics2D graphics2D, ImageObserver imageObserver);
-
-  public int computeBlockIndexFromCurrentPosition() {
-    return getX() / Maze.BLOCK_SIZE + Maze.COLUMNS * (getY() / Maze.BLOCK_SIZE);
+  private void setNewPosition(Pair<Integer, Integer> travelDistance) {
+    this.x += travelDistance.getFirst();
+    this.y += travelDistance.getSecond();
   }
 
-  public boolean canMoveMore() {
-    return this.cumulativeDeltaX < Maze.BLOCK_SIZE && this.cumulativeDeltaY < Maze.BLOCK_SIZE;
+  private void addToCumulativeDelta(Pair<Integer, Integer> travelDistance) {
+    this.cumulativeDeltaX += Math.abs(travelDistance.getFirst());
+    this.cumulativeDeltaY += Math.abs(travelDistance.getSecond());
   }
 
   public void resetCumulativeDelta() {
     this.cumulativeDeltaX = 0;
     this.cumulativeDeltaY = 0;
   }
+
+  public int computeBlockIndexFromCurrentPosition() {
+    return this.x / Maze.BLOCK_SIZE + Maze.COLUMNS * (this.y / Maze.BLOCK_SIZE);
+  }
+
+  public boolean canMoveMore() {
+    return this.cumulativeDeltaX < Maze.BLOCK_SIZE && this.cumulativeDeltaY < Maze.BLOCK_SIZE;
+  }
+
+  protected abstract void draw(Graphics2D graphics2D, ImageObserver imageObserver);
 
 }
