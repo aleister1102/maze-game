@@ -19,7 +19,6 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class GamePanel extends JPanel implements ActionListener {
 
-  private final int INITIAL_SPEED = Actor.VALID_SPEEDS[3];
   private boolean isGameRunning = false;
 
   private Dimension dimension;
@@ -42,7 +41,7 @@ public class GamePanel extends JPanel implements ActionListener {
     dimension = new Dimension(MazeGame.screenWidth, MazeGame.screenHeight);
     textFont = new Font("Arial", Font.BOLD, 14);
     maze = new Maze();
-    pacman = new Pacman(INITIAL_SPEED);
+    pacman = new Pacman();
     timer = new Timer(40, this);
     timer.start();
   }
@@ -70,7 +69,7 @@ public class GamePanel extends JPanel implements ActionListener {
 
   private void showIntroScreen(Graphics2D graphics2D) {
 
-    String start = "Press SPACE to start";
+    String start = "Press ENTER to start";
     graphics2D.setColor(Color.yellow);
     graphics2D.setFont(textFont);
     graphics2D.drawString(start, Maze.SCREEN_WIDTH / 4 + 10, Maze.SCREEN_HEIGHT / 2);
@@ -84,7 +83,6 @@ public class GamePanel extends JPanel implements ActionListener {
       int key = e.getKeyCode();
 
       if (isGameRunning) {
-        pacman.resetCumulativeDelta();
 
         if (key == KeyEvent.VK_A) {
           pacman.requestToMoveLeft();
@@ -94,11 +92,15 @@ public class GamePanel extends JPanel implements ActionListener {
           pacman.requestToMoveUp();
         } else if (key == KeyEvent.VK_S) {
           pacman.requestToMoveDown();
+        } else if (key == KeyEvent.VK_SPACE) {
+          pacman.fire();
         } else if (key == KeyEvent.VK_Q && timer.isRunning()) {
           isGameRunning = false;
         }
+
+        pacman.resetCumulativeDelta();
       } else {
-        if (key == KeyEvent.VK_SPACE) {
+        if (key == KeyEvent.VK_ENTER) {
           isGameRunning = true;
           initialize();
         }

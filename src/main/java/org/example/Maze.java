@@ -139,7 +139,7 @@ public class Maze {
   }
 
   private void drawWalls(Graphics2D graphics2D) {
-    graphics2D.setStroke(new BasicStroke(2));
+    graphics2D.setStroke(new BasicStroke(4));
 
     short blockIndex = 0;
     for (int y = 0; y < SCREEN_HEIGHT; y += Maze.BLOCK_SIZE) {
@@ -196,28 +196,23 @@ public class Maze {
     return (block & 8) != 0;
   }
 
-  public boolean isHavingValidMoveRequest(Pacman pacman, int blockIndex) {
+  public boolean isHavingValidMoveRequest(Actor actor, int blockIndex) {
 
     short currentBlock = getScreenDataAtIndex(blockIndex);
     short nextBlock = getScreenDataAtIndex(blockIndex + 1);
     short belowBlock = getScreenDataAtIndex(blockIndex + COLUMNS);
 
     // move to left
-    if (pacman.getRequestDeltaX() == -1 && pacman.getRequestDeltaY() == 0 && hasLeftBorder(currentBlock)) return false;
+    if (actor.getRequestDeltaX() == -1 && actor.getRequestDeltaY() == 0 && hasLeftBorder(currentBlock)) return false;
       // move to top
-    else if (pacman.getRequestDeltaX() == 0 && pacman.getRequestDeltaY() == -1 && hasTopBorder(currentBlock))
+    else if (actor.getRequestDeltaX() == 0 && actor.getRequestDeltaY() == -1 && hasTopBorder(currentBlock))
       return false;
       // move to right
-    else if (pacman.getRequestDeltaX() == 1 && pacman.getRequestDeltaY() == 0 && (hasRightBorder(currentBlock) || hasLeftBorder(nextBlock)))
+    else if (actor.getRequestDeltaX() == 1 && actor.getRequestDeltaY() == 0 && (hasRightBorder(currentBlock) || hasLeftBorder(nextBlock)))
       return false;
       // move to bottom
     else
-      return pacman.getRequestDeltaX() != 0 || pacman.getRequestDeltaY() != 1 || (!hasBottomBorder(currentBlock) && !hasTopBorder(belowBlock));
-  }
-
-  public boolean isHavingInvalidMoveRequest(Pacman pacman, int blockIndex) {
-
-    return !isHavingValidMoveRequest(pacman, blockIndex);
+      return actor.getRequestDeltaX() != 0 || actor.getRequestDeltaY() != 1 || (!hasBottomBorder(currentBlock) && !hasTopBorder(belowBlock));
   }
 
 }

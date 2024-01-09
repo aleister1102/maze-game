@@ -6,18 +6,15 @@ import lombok.EqualsAndHashCode;
 
 import javax.swing.ImageIcon;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.image.ImageObserver;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class Pacman extends Actor {
 
-  private Image heart;
-  private Image down, up, left, right;
+  private final int INITIAL_SPEED = Actor.VALID_SPEEDS[3];
 
-  private int requestDeltaX;
-  private int requestDeltaY;
+  private Bullet bullet;
 
   public Pacman() {
 
@@ -25,21 +22,16 @@ public class Pacman extends Actor {
     initialize();
   }
 
-  public Pacman(int initialSpeed) {
-
-    this();
-    this.setSpeed(initialSpeed);
-  }
-
   private void loadImages() {
 
-    this.setDown(new ImageIcon("src/main/resources/images/down.gif").getImage());
-    this.setUp(new ImageIcon("src/main/resources/images/up.gif").getImage());
-    this.setLeft(new ImageIcon("src/main/resources/images/left.gif").getImage());
-    this.setRight(new ImageIcon("src/main/resources/images/right.gif").getImage());
+    this.image = new ImageIcon("src/main/resources/images/pacman.png").getImage();
+    this.down = new ImageIcon("src/main/resources/images/down.gif").getImage();
+    this.up = new ImageIcon("src/main/resources/images/up.gif").getImage();
+    this.left = new ImageIcon("src/main/resources/images/left.gif").getImage();
+    this.right = new ImageIcon("src/main/resources/images/right.gif").getImage();
   }
 
-  public void initialize() {
+  private void initialize() {
 
     this.x = 15 * Maze.BLOCK_SIZE;
     this.y = 31 * Maze.BLOCK_SIZE;
@@ -47,36 +39,17 @@ public class Pacman extends Actor {
     this.deltaY = 0;
     this.requestDeltaX = 0;
     this.requestDeltaY = 0;
+    this.direction = Direction.STAY;
+    this.speed = INITIAL_SPEED;
+    this.bullet = new Bullet(this);
   }
 
-  public void requestToMoveLeft() {
-
-    this.requestDeltaX = -1;
-    this.requestDeltaY = 0;
-  }
-
-  public void requestToMoveRight() {
-
-    this.requestDeltaX = 1;
-    this.requestDeltaY = 0;
-  }
-
-  public void requestToMoveUp() {
-
-    this.requestDeltaX = 0;
-    this.requestDeltaY = -1;
-  }
-
-  public void requestToMoveDown() {
-
-    this.requestDeltaX = 0;
-    this.requestDeltaY = 1;
-  }
-
+  @Override
   public void move(Graphics2D graphics2D, ImageObserver imageObserver, Maze maze) {
 
+    // TODO: sometimes can not move
     if (x % Maze.BLOCK_SIZE == 0 && y % Maze.BLOCK_SIZE == 0) {
-      // get current pair of pacman
+      // get current position of pacman
       int blockIndex = computeBlockIndexFromCurrentPosition();
 
       // check for valid move request
@@ -84,36 +57,58 @@ public class Pacman extends Actor {
         if (maze.isHavingValidMoveRequest(this, blockIndex)) {
           deltaX = requestDeltaX;
           deltaY = requestDeltaY;
+        } else {
+          deltaX = 0;
+          deltaY = 0;
         }
-      }
-
-      // check for standstill
-      if (maze.isHavingInvalidMoveRequest(this, blockIndex)) {
-        // if can't move anymore, place pacman at the origin
-        deltaX = 0;
-        deltaY = 0;
       }
     }
 
-    if (canMoveMore()) {
+    // can not move if bullet is moving
+    if (isMoving() && canMoveMore() && !bullet.isMoving()) {
       redrawAtNewPosition(graphics2D, imageObserver);
     } else {
       draw(graphics2D, imageObserver);
+      stopMoving();
+
+      bullet.move(graphics2D, imageObserver, maze);
     }
   }
 
   @Override
-  protected void draw(Graphics2D graphics2D, ImageObserver observer) {
+  public boolean canMoveMore() {
 
-    // change image based on pacman direction
-    if (requestDeltaX == -1) {
-      graphics2D.drawImage(left, x + 1, y + 1, observer);
-    } else if (requestDeltaX == 1) {
-      graphics2D.drawImage(right, x + 1, y + 1, observer);
-    } else if (requestDeltaY == -1) {
-      graphics2D.drawImage(up, x + 1, y + 1, observer);
-    } else {
-      graphics2D.drawImage(down, x + 1, y + 1, observer);
+    return this.cumulativeDeltaX < Maze.BLOCK_SIZE && this.cumulativeDeltaY < Maze.BLOCK_SIZE;
+  }
+
+  @Override
+  public void draw(Graphics2D graphics2D, ImageObserver observer) {
+
+    super.draw(graphics2D, observer);
+    bullet.draw(graphics2D, observer);
+  }
+
+  public void fire() {
+    // TODO: prevent firing bullet when opposite with a wall
+    // TODO: prevent firing when bullet has not moved at least 4 block
+    bullet.setHasCollisionWithWall(false);
+
+    if (isMovingLeft()) {
+      bullet.setX(this.x - Maze.BLOCK_SIZE);
+      bullet.setY(this.y);
+      bullet.requestToMoveLeft();
+    } else if (isMovingRight()) {
+      bullet.setX(this.x + Maze.BLOCK_SIZE);
+      bullet.setY(this.y);
+      bullet.requestToMoveRight();
+    } else if (isMovingUp()) {
+      bullet.setX(this.x);
+      bullet.setY(this.y - Maze.BLOCK_SIZE);
+      bullet.requestToMoveUp();
+    } else if (isMovingDown()) {
+      bullet.setX(this.x);
+      bullet.setY(this.y + Maze.BLOCK_SIZE);
+      bullet.requestToMoveDown();
     }
   }
 
