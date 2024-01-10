@@ -204,23 +204,37 @@ public class Maze {
     return actor.getX() / BLOCK_SIZE + COLUMNS * (actor.getY() / BLOCK_SIZE);
   }
 
-  protected boolean isHavingValidMoveRequest(Actor actor, int blockIndex) {
+  protected boolean isHavingValidMoveRequest(Actor actor) {
 
+    int blockIndex = computeBlockIndexFromCurrentPosition(actor);
     short currentBlock = getScreenDataAtIndex(blockIndex);
     short nextBlock = getScreenDataAtIndex(blockIndex + 1);
     short belowBlock = getScreenDataAtIndex(blockIndex + COLUMNS);
+    String actorName = actor.getClass().getSimpleName();
+    boolean currentPositionIsDivisibleByBlockSize = isCurrentPositionDivisibleByBlockSize(actor);
 
-    // move to left
-    if (actor.getRequestDeltaX() == -1 && actor.getRequestDeltaY() == 0 && hasLeftBorder(currentBlock)) return false;
-      // move to top
-    else if (actor.getRequestDeltaX() == 0 && actor.getRequestDeltaY() == -1 && hasTopBorder(currentBlock))
+    LogUtil.log("[DEBUG-isHavingValidMoveRequest]: current position of %s: (%d, %d)", actorName, actor.getX(), actor.getY());
+    if(!currentPositionIsDivisibleByBlockSize) return true;
+
+    if (actor.isMovingLeft() && hasLeftBorder(currentBlock)) {
+      // move to left should not have left border
+      LogUtil.log("[DEBUG-isHavingValidMoveRequest]: can not move %s to left because there is left border", actorName);
       return false;
-      // move to right
-    else if (actor.getRequestDeltaX() == 1 && actor.getRequestDeltaY() == 0 && (hasRightBorder(currentBlock) || hasLeftBorder(nextBlock)))
+    } else if (actor.isMovingUp() && hasTopBorder(currentBlock)) {
+      // move to top should not have top border
+      LogUtil.log("[DEBUG-isHavingValidMoveRequest]: can not move %s to top because there is top border", actorName);
       return false;
-      // move to bottom
-    else
-      return actor.getRequestDeltaX() != 0 || actor.getRequestDeltaY() != 1 || (!hasBottomBorder(currentBlock) && !hasTopBorder(belowBlock));
+    } else if (actor.isMovingRight() && (hasRightBorder(currentBlock) || hasLeftBorder(nextBlock))) {
+      // move to right should not have right border
+      LogUtil.log("[DEBUG-isHavingValidMoveRequest]: can not move %s to right because there is right border", actorName);
+      return false;
+    } else if (actor.isMovingDown() && (hasBottomBorder(currentBlock) || hasTopBorder(belowBlock))) {
+      // move to bottom should not have bottom border
+      LogUtil.log("[DEBUG-isHavingValidMoveRequest]: can not move %s to bottom because there is bottom border", actorName);
+      return false;
+    }
+    return true;
+
   }
 
 }
