@@ -151,7 +151,7 @@ public class Maze {
         short block = this.getScreenDataAtIndex(blockIndex);
 
         this.drawWall(graphics2D, x, y, block);
-        this.drawBlockIndex(graphics2D, x, y, blockIndex);
+        //this.drawBlockIndex(graphics2D, x, y, blockIndex);
 
         blockIndex++;
       }

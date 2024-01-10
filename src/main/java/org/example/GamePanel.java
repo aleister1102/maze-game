@@ -29,6 +29,8 @@ public class GamePanel extends JPanel implements ActionListener {
   private Pacman pacman;
   private Timer timer;
   private File logFile;
+  private int previousKey;
+  private int repeatedKeyCount;
 
   public GamePanel() {
 
@@ -47,6 +49,8 @@ public class GamePanel extends JPanel implements ActionListener {
     timer = new Timer(40, this);
     timer.start();
     logFile = FileUtil.createFile(LogUtil.LOG_FILE);
+    previousKey = 0;
+    repeatedKeyCount = 0;
   }
 
   public void paintComponent(Graphics g) {
@@ -57,6 +61,7 @@ public class GamePanel extends JPanel implements ActionListener {
 
     if (isGameRunning) {
       playGame(graphics2D);
+      showKeyPressed(graphics2D);
     } else {
       showIntroScreen(graphics2D);
     }
@@ -78,11 +83,30 @@ public class GamePanel extends JPanel implements ActionListener {
     graphics2D.drawString(start, Maze.SCREEN_WIDTH / 4 + 10, Maze.SCREEN_HEIGHT + 20);
   }
 
+  private void showKeyPressed(Graphics2D graphics2D) {
+    if (previousKey == 0) return;
+
+    String displayKey = repeatedKeyCount == 0
+      ? KeyEvent.getKeyText(previousKey)
+      : KeyEvent.getKeyText(previousKey) + " (x" + repeatedKeyCount + ")";
+
+    graphics2D.setColor(Color.white);
+    graphics2D.setFont(textFont);
+    graphics2D.drawString(displayKey, 10, Maze.SCREEN_HEIGHT + 20);
+  }
+
   class TAdapter extends KeyAdapter {
 
     @Override
     public void keyPressed(KeyEvent e) {
       int key = e.getKeyCode();
+
+      if (key == previousKey) {
+        repeatedKeyCount += 1;
+      } else {
+        previousKey = key;
+        repeatedKeyCount = 0;
+      }
 
       if (isGameRunning) {
         if (key == KeyEvent.VK_A) {
@@ -101,8 +125,10 @@ public class GamePanel extends JPanel implements ActionListener {
           LogUtil.log("[EVENT]: fire bullet");
           pacman.fire();
         } else if (key == KeyEvent.VK_Q && timer.isRunning()) {
-          LogUtil.log("[EVENT]: pause game");
           isGameRunning = false;
+
+          // process log
+          LogUtil.log("[EVENT]: pause game");
           FileUtil.clearFile(logFile);
           LogUtil.dumpLog(logFile);
           LogUtil.clearLogTrace();
