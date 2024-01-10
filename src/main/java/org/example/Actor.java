@@ -8,7 +8,6 @@ import lombok.Data;
 @Data
 public abstract class Actor {
 
-  public static final int[] VALID_SPEEDS = {1, 2, 4, 5, 10};
   protected Image image, down, up, left, right;
 
   // coordinates
@@ -85,26 +84,12 @@ public abstract class Actor {
 
   public abstract void move(Graphics2D graphics, ImageObserver observer, Maze maze);
 
-  protected abstract boolean canMoveMore();
-
-  protected boolean updateDeltaBasedOnMoveRequest(Maze maze) {
-    boolean isMoving = this.isMoving();
+  protected void updateDeltaBasedOnMoveRequest(Maze maze) {
     boolean currentPositionIsDivisibleByBlockSize = maze.isCurrentPositionDivisibleByBlockSize(this);
-    int blockIndex = maze.computeBlockIndexFromCurrentPosition(this);
-    boolean hasValidMoveRequest = maze.isHavingValidMoveRequest(this, blockIndex);
-
-    if (!isMoving) return false;
     if (currentPositionIsDivisibleByBlockSize) {
-      if (hasValidMoveRequest) {
-        deltaX = requestDeltaX;
-        deltaY = requestDeltaY;
-      } else {
-        deltaX = 0;
-        deltaY = 0;
-      }
+      deltaX = requestDeltaX;
+      deltaY = requestDeltaY;
     }
-
-    return hasValidMoveRequest;
   }
 
   protected void draw(Graphics2D graphics2D, ImageObserver observer) {
@@ -120,13 +105,11 @@ public abstract class Actor {
     }
   }
 
-  protected void drawAtNewPosition(Graphics2D graphics2D, ImageObserver observer) {
+  protected void updatePosition() {
     // compute travel distance and update actor state
     Pair<Integer, Integer> travelDistance = computeTravelDistance();
     setNewPosition(travelDistance);
     addToCumulativeDelta(travelDistance);
-
-    draw(graphics2D, observer);
   }
 
   private Pair<Integer, Integer> computeTravelDistance() {
@@ -145,19 +128,9 @@ public abstract class Actor {
     this.cumulativeDeltaY += Math.abs(travelDistance.getSecond());
   }
 
-  public void resetCumulativeDelta() {
+  protected void resetCumulativeDelta() {
     this.cumulativeDeltaX = 0;
     this.cumulativeDeltaY = 0;
-  }
-
-  public void printInformation() {
-    System.out.println("------------------------------------");
-    System.out.println("Actor name: " + getClass().getName());
-    System.out.println("x: " + x + ", y: " + y);
-    System.out.println("deltaX: " + deltaX + ", deltaY: " + deltaY);
-    System.out.println("requestDeltaX: " + requestDeltaX + ", requestDeltaY: " + requestDeltaY);
-    System.out.println("speed: " + speed);
-    System.out.println("cumulativeDeltaX: " + cumulativeDeltaX + ", cumulativeDeltaY: " + cumulativeDeltaY);
   }
 
 }
