@@ -6,6 +6,7 @@ import java.awt.image.ImageObserver;
 import javax.swing.ImageIcon;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import static org.example.Maze.BLOCK_SIZE;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -64,18 +65,21 @@ public class Bullet extends Actor {
   @Override
   public void draw(Graphics2D graphics2D, ImageObserver imageObserver) {
     if (hasCollisionWithWall) return;
+    graphics2D.setColor(Color.magenta);
 
     if (isMovingLeft()) {
-      graphics2D.drawImage(left, x + 1, y + 1, imageObserver);
+      graphics2D.drawImage(left, x + 1, y + 5, imageObserver);
+      graphics2D.drawString(String.valueOf(id), x + BLOCK_SIZE + 3, y + 15);
     } else if (isMovingRight()) {
-      graphics2D.drawImage(right, x + 1, y + 1, imageObserver);
+      graphics2D.drawImage(right, x + 1, y + 5, imageObserver);
+      graphics2D.drawString(String.valueOf(id), x - 5, y + 15);
     } else if (isMovingUp()) {
-      graphics2D.drawImage(up, x + 1, y + 1, imageObserver);
+      graphics2D.drawImage(up, x + 6, y + 1, imageObserver);
+      graphics2D.drawString(String.valueOf(id), x + 8, y + 5);
     } else if (isMovingDown()) {
-      graphics2D.drawImage(down, x + 1, y + 1, imageObserver);
+      graphics2D.drawImage(down, x + 6, y + 1, imageObserver);
+      graphics2D.drawString(String.valueOf(id), x + 8, y + 5);
     }
-    graphics2D.setColor(Color.magenta);
-    graphics2D.drawString(String.valueOf(id), x + 2, y + 1);
   }
 
   public String toString() {
