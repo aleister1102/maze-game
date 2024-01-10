@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 import lombok.Data;
 
@@ -79,15 +80,6 @@ public class Maze {
     return screenData[index];
   }
 
-  public void setScreenDataAtIndex(int index, short value) {
-
-    if (index > screenData.length - 1 || index < 0) {
-      return;
-    }
-
-    screenData[index] = value;
-  }
-
   private void generateRandomMaze(short[] mapData) {
 
     Arrays.fill(mapData, (short) 0);
@@ -150,7 +142,7 @@ public class Maze {
         short block = this.getScreenDataAtIndex(blockIndex);
 
         this.drawWall(graphics2D, x, y, block);
-        //this.drawBlockIndex(graphics2D, x, y, blockIndex);
+        this.drawBlockIndex(graphics2D, x, y, blockIndex);
 
         blockIndex++;
       }
@@ -223,24 +215,62 @@ public class Maze {
     //  actorName, actorId, actor.getX(), actor.getY());
     if (!currentPositionIsDivisibleByBlockSize) return true;
 
-    if (actor.isMovingLeft() && hasLeftBorder(currentBlock)) {
-      // move to left should not have left border
-      //LogUtil.log("[DEBUG-hasValidMoveRequest]: can not move [%s@%s] to left because there is left border", actorName, actorId);
-      return false;
-    } else if (actor.isMovingUp() && hasTopBorder(currentBlock)) {
-      // move to top should not have top border
-      //LogUtil.log("[DEBUG-hasValidMoveRequest]: can not move [%s@%s] to top because there is top border", actorName, actorId);
-      return false;
-    } else if (actor.isMovingRight() && (hasRightBorder(currentBlock) || hasLeftBorder(nextBlock))) {
-      // move to right should not have right border
-      //LogUtil.log("[DEBUG-hasValidMoveRequest]: can not move [%s@%s] to right because there is right border", actorName, actorId);
-      return false;
-    } else if (actor.isMovingDown() && (hasBottomBorder(currentBlock) || hasTopBorder(belowBlock))) {
-      // move to bottom should not have bottom border
-      //LogUtil.log("[DEBUG-hasValidMoveRequest]: can not move [%s@%s] to bottom because there is bottom border", actorName, actorId);
-      return false;
+    if (actor.isMovingLeft()) {
+      if (hasLeftBorder(currentBlock)) {
+        // move to left should not have left border
+        //LogUtil.log("[DEBUG-hasValidMoveRequest]: can not move [%s@%s] to left because there is left border", actorName, actorId);
+        return false;
+      }
+      if (isThereAPlayerAtBlockIndex(blockIndex - 1)) {
+        // check if there is a player at the block to the left
+        LogUtil.log("[DEBUG-hasValidMoveRequest]: can not move [%s@%s] to left because there is player at that position", actorName, actorId);
+        return false;
+      }
+    } else if (actor.isMovingUp()) {
+      if (hasTopBorder(currentBlock)) {
+        // move to top should not have top border
+        //LogUtil.log("[DEBUG-hasValidMoveRequest]: can not move [%s@%s] to top because there is top border", actorName, actorId);
+        return false;
+      }
+      if (isThereAPlayerAtBlockIndex(blockIndex - COLUMNS)) {
+        // check if there is a player at the block to the top
+        LogUtil.log("[DEBUG-hasValidMoveRequest]: can not move [%s@%s] to top because there is player at that position", actorName, actorId);
+        return false;
+      }
+    } else if (actor.isMovingRight()) {
+      if ((hasRightBorder(currentBlock) || hasLeftBorder(nextBlock))) {
+        // move to right should not have right border
+        //LogUtil.log("[DEBUG-hasValidMoveRequest]: can not move [%s@%s] to right because there is right border", actorName, actorId);
+        return false;
+      }
+      if (isThereAPlayerAtBlockIndex(blockIndex + 1)) {
+        // check if there is a player at the block to the right
+        LogUtil.log("[DEBUG-hasValidMoveRequest]: can not move [%s@%s] to right because there is player at that position", actorName, actorId);
+        return false;
+      }
+    } else if (actor.isMovingDown()) {
+      if ((hasBottomBorder(currentBlock) || hasTopBorder(belowBlock))) {
+        // move to bottom should not have bottom border
+        //LogUtil.log("[DEBUG-hasValidMoveRequest]: can not move [%s@%s] to bottom because there is bottom border", actorName, actorId);
+        return false;
+      }
+      if (isThereAPlayerAtBlockIndex(blockIndex + COLUMNS)) {
+        // check if there is a player at the block to the bottom
+        LogUtil.log("[DEBUG-hasValidMoveRequest]: can not move [%s@%s] to bottom because there is player at that position", actorName, actorId);
+        return false;
+      }
     }
     return true;
+  }
+
+  private boolean isThereAPlayerAtBlockIndex(int blockIndexToCheck) {
+    List<Player> players = GamePanel.players;
+
+    for (Player player : players) {
+      int blockIndex = player.computeBlockIndexFromCurrentPosition();
+      if (blockIndex == blockIndexToCheck) return true;
+    }
+    return false;
   }
 
   public static Pair<Integer, Integer> computePositionFromBlockIndex(int blockIndex) {
