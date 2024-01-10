@@ -19,14 +19,14 @@ public class Bullet extends Actor {
     loadImages();
   }
 
-  public Bullet(Pacman pacman, int id) {
+  public Bullet(Player player, int id) {
     this();
     this.id = id;
-    this.x = pacman.getX();
-    this.y = pacman.getY();
+    this.x = player.getX();
+    this.y = player.getY();
     this.direction = Direction.STAY;
-    //* FEAT2: speed of bullet is 4 times faster than pacman
-    this.speed = pacman.getSpeed() * SPEED_MULTIPLIER;
+    //* FEAT2: speed of bullet is 4 times faster than player
+    this.speed = player.getSpeed() * SPEED_MULTIPLIER;
   }
 
   private void loadImages() {

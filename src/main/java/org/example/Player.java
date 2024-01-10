@@ -13,13 +13,13 @@ import java.awt.image.ImageObserver;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class Pacman extends Actor {
+public class Player extends Actor {
 
   private final int INITIAL_SPEED = 5;
   private final int EXPECTED_MAX_BULLET = Maze.ROWS / 4 - 1;
   private List<Bullet> bullets;
 
-  public Pacman() {
+  public Player() {
 
     loadImages();
     initialize();

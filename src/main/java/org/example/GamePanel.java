@@ -26,7 +26,7 @@ public class GamePanel extends JPanel implements ActionListener {
   private Font textFont;
   private Graphics2D graphics2D;
   private Maze maze;
-  private Pacman pacman;
+  private Player player;
   private Timer timer;
   private File logFile;
   private int previousKey;
@@ -45,7 +45,7 @@ public class GamePanel extends JPanel implements ActionListener {
     dimension = new Dimension(MazeGame.screenWidth, MazeGame.screenHeight);
     textFont = new Font("Arial", Font.BOLD, 14);
     maze = new Maze();
-    pacman = new Pacman();
+    player = new Player();
     timer = new Timer(40, this);
     timer.start();
     logFile = FileUtil.createFile(LogUtil.LOG_FILE);
@@ -71,8 +71,8 @@ public class GamePanel extends JPanel implements ActionListener {
   }
 
   private void playGame(Graphics2D graphics2D) {
-    pacman.move(graphics2D, this, maze);
-    pacman.moveBullets(graphics2D, this, maze);
+    player.move(graphics2D, this, maze);
+    player.moveBullets(graphics2D, this, maze);
   }
 
   private void showIntroScreen(Graphics2D graphics2D) {
@@ -110,20 +110,20 @@ public class GamePanel extends JPanel implements ActionListener {
 
       if (isGameRunning) {
         if (key == KeyEvent.VK_A) {
-          //LogUtil.log("[EVENT]: request pacman to move left");
-          pacman.requestToMoveLeft();
+          //LogUtil.log("[EVENT]: request player to move left");
+          player.requestToMoveLeft();
         } else if (key == KeyEvent.VK_D) {
-          //LogUtil.log("[EVENT]: request pacman to move right");
-          pacman.requestToMoveRight();
+          //LogUtil.log("[EVENT]: request player to move right");
+          player.requestToMoveRight();
         } else if (key == KeyEvent.VK_W) {
-          //LogUtil.log("[EVENT]: request pacman to move up");
-          pacman.requestToMoveUp();
+          //LogUtil.log("[EVENT]: request player to move up");
+          player.requestToMoveUp();
         } else if (key == KeyEvent.VK_S) {
-          //LogUtil.log("[EVENT]: request pacman to move down");
-          pacman.requestToMoveDown();
+          //LogUtil.log("[EVENT]: request player to move down");
+          player.requestToMoveDown();
         } else if (key == KeyEvent.VK_SPACE) {
           LogUtil.log("[EVENT]: fire bullet");
-          pacman.fire();
+          player.fire();
         } else if (key == KeyEvent.VK_Q && timer.isRunning()) {
           isGameRunning = false;
 
