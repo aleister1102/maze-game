@@ -21,7 +21,7 @@ dạng như sau:
 
 Các giá trị port có thể sử dụng được quy định trước. Dự định sẽ viết một bash script để kiểm tra xem port có khả dụng hay không, nếu có thì gọi đến câu lệnh trên và truyền vào port khả dụng.
 
-Sau khi khởi chạy thành công thì chương trình sẽ tạo ra một instance của lớp `Process` chịu trách nhiệm lắng nghe các kết nối và gửi message cho các tiến trình khác. Cụ thể, constructor của `Process` sẽ tạo một instance của lớp `ServerSocket`. Nếu tạo thành công thì sẽ tiếp tục tạo lớp `Receiver` dùng để tạo một client socket tương ứng với mỗi yêu cầu kết nối gửi đến. Quá trình lắng nghe và tạo socket cho các kết nối gửi đến này của process sẽ diễn tra ở trong một thread riêng biệt để tránh blocking.
+Sau khi khởi chạy thành công thì chương trình sẽ tạo ra một instance của lớp `Process` chịu trách nhiệm lắng nghe các kết nối và gửi message cho các tiến trình khác. Cụ thể, constructor của `Process` sẽ tạo một instance của lớp `ServerSocket`. Nếu tạo thành công thì sẽ tiếp tục tạo lớp `Receiver` dùng để tạo một client socket tương ứng với mỗi yêu cầu kết nối gửi đến. Quá trình lắng nghe và tạo socket cho các kết nối gửi đến này của process sẽ diễn ra ở trong một thread riêng biệt để tránh blocking.
 
 Sau đó, process sẽ cố gắng mở kết nối socket đến các port đã được quy định trước ở trong class `Configuration` và đồng thời tạo một instance của class `Sender` tương ứng với mỗi port được mở. Nếu có một port nào không thể mở kết nối thì process sẽ thử lại sau 10 giây. Quá trình này cũng diễn ra ở trong một luồng riêng biệt.
 
