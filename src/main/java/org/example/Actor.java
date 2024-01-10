@@ -9,6 +9,7 @@ import lombok.Data;
 public abstract class Actor {
 
   protected Image image, down, up, left, right;
+  protected int id;
 
   // coordinates
   protected int x;
@@ -78,6 +79,10 @@ public abstract class Actor {
     return this.direction == Direction.DOWN;
   }
 
+  protected boolean isNotMoving() {
+    return !isMoving();
+  }
+
   protected boolean isMoving() {
     return this.requestDeltaX != 0 || this.requestDeltaY != 0;
   }
@@ -131,6 +136,10 @@ public abstract class Actor {
   protected void resetCumulativeDelta() {
     this.cumulativeDeltaX = 0;
     this.cumulativeDeltaY = 0;
+  }
+
+  protected boolean isOutsideTheWall() {
+    return this.x < 0 || this.y < 0 || this.x > Maze.SCREEN_WIDTH || this.y > Maze.SCREEN_HEIGHT;
   }
 
 }

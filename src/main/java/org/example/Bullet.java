@@ -1,8 +1,8 @@
 package org.example;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.ImageObserver;
-import java.math.BigInteger;
 import javax.swing.ImageIcon;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -11,15 +11,17 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class Bullet extends Actor {
 
-  private final int SPEED_MULTIPLIER = 4;
-  boolean hasCollisionWithWall = false;
+  public static final int SPEED_MULTIPLIER = 4;
+
+  private boolean hasCollisionWithWall = false;
 
   public Bullet() {
     loadImages();
   }
 
-  public Bullet(Pacman pacman) {
+  public Bullet(Pacman pacman, int id) {
     this();
+    this.id = id;
     this.x = pacman.getX();
     this.y = pacman.getY();
     this.direction = Direction.STAY;
@@ -37,17 +39,26 @@ public class Bullet extends Actor {
 
   @Override
   public void move(Graphics2D graphics, ImageObserver observer, Maze maze) {
-    boolean isMoving = this.isMoving();
-    boolean hasValidMoveRequest = maze.isHavingValidMoveRequest(this);
+    boolean notMoving = this.isNotMoving();
+    boolean isOutsideTheWall = this.isOutsideTheWall();
+    boolean hasInvalidMoveRequest = maze.hasInvalidMoveRequest(this);
+    LogUtil.log("[DEBUG-bullet.move]: bullet %s hasInvalidMoveRequest=%s", this.id, hasInvalidMoveRequest);
 
-    if (!isMoving) return;
-    if (!hasValidMoveRequest) hasCollisionWithWall = true;
+    if (notMoving) return;
+    if (hasInvalidMoveRequest || isOutsideTheWall) hasCollisionWithWall = true;
     else {
       updateDeltaBasedOnMoveRequest(maze);
       updatePosition();
       draw(graphics, observer);
     }
     if (hasCollisionWithWall) this.stopMoving();
+  }
+
+  @Override
+  protected void updateDeltaBasedOnMoveRequest(Maze maze) {
+    //? allow bullet to move out of the wall
+    deltaX = requestDeltaX;
+    deltaY = requestDeltaY;
   }
 
   @Override
@@ -63,12 +74,14 @@ public class Bullet extends Actor {
     } else if (isMovingDown()) {
       graphics2D.drawImage(down, x + 1, y + 1, observer);
     }
+    graphics2D.setColor(Color.magenta);
+    graphics2D.drawString(String.valueOf(id), x + 3, y + 1);
   }
 
   public String toString() {
     return String.format(
-      "[Bullet(hashCode=%s, hasCollisionWithWall=%s, isMoving=%s, requestDeltaX=%d, requestDeltaY=%d, cumulativeDeltaX=%d, cumulativeDeltaY=%d)]",
-      BigInteger.valueOf(this.hashCode()),
+      "[Bullet(id=%s, hasCollisionWithWall=%s, isMoving=%s, requestDeltaX=%d, requestDeltaY=%d, cumulativeDeltaX=%d, cumulativeDeltaY=%d)]",
+      this.id,
       this.hasCollisionWithWall,
       this.isMoving(),
       this.requestDeltaX,

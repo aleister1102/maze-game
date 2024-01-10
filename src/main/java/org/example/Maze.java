@@ -3,6 +3,7 @@ package org.example;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.util.Arrays;
 import java.util.Random;
@@ -57,10 +58,13 @@ public class Maze {
   private short[] mapData;
   private short[] screenData;
 
+  private Font indexFont;
+
   public Maze() {
 
     mapData = new short[ROWS * COLUMNS];
     screenData = new short[ROWS * COLUMNS];
+    indexFont = new Font("Arial", Font.BOLD, 10);
 
     generateRandomMaze(mapData);
     copyMapDataToScreenData();
@@ -147,6 +151,7 @@ public class Maze {
         short block = this.getScreenDataAtIndex(blockIndex);
 
         this.drawWall(graphics2D, x, y, block);
+        this.drawBlockIndex(graphics2D, x, y, blockIndex);
 
         blockIndex++;
       }
@@ -196,45 +201,55 @@ public class Maze {
     return (block & 8) != 0;
   }
 
+  private void drawBlockIndex(Graphics2D graphics2D, int x, int y, int blockIndex) {
+    graphics2D.setFont(indexFont);
+    graphics2D.drawString(String.valueOf(blockIndex), x + 5, y + 15);
+  }
+
+  protected boolean hasInvalidMoveRequest(Actor actor) {
+    return !hasValidMoveRequest(actor);
+  }
+
+  protected boolean hasValidMoveRequest(Actor actor) {
+
+    String actorName = actor.getClass().getSimpleName();
+    int actorId = actor.getId();
+    int blockIndex = computeBlockIndexFromCurrentPosition(actor);
+    short currentBlock = getScreenDataAtIndex(blockIndex);
+    short nextBlock = getScreenDataAtIndex(blockIndex + 1);
+    short belowBlock = getScreenDataAtIndex(blockIndex + COLUMNS);
+    boolean currentPositionIsDivisibleByBlockSize = isCurrentPositionDivisibleByBlockSize(actor);
+
+    LogUtil.log("[DEBUG-isHavingValidMoveRequest]: current position of [%s@%s]: (%d, %d)",
+      actorName, actorId, actor.getX(), actor.getY());
+    if (!currentPositionIsDivisibleByBlockSize) return true;
+
+    if (actor.isMovingLeft() && hasLeftBorder(currentBlock)) {
+      // move to left should not have left border
+      LogUtil.log("[DEBUG-isHavingValidMoveRequest]: can not move [%s@%s] to left because there is left border", actorName, actorId);
+      return false;
+    } else if (actor.isMovingUp() && hasTopBorder(currentBlock)) {
+      // move to top should not have top border
+      LogUtil.log("[DEBUG-isHavingValidMoveRequest]: can not move [%s@%s] to top because there is top border", actorName, actorId);
+      return false;
+    } else if (actor.isMovingRight() && (hasRightBorder(currentBlock) || hasLeftBorder(nextBlock))) {
+      // move to right should not have right border
+      LogUtil.log("[DEBUG-isHavingValidMoveRequest]: can not move [%s@%s] to right because there is right border", actorName, actorId);
+      return false;
+    } else if (actor.isMovingDown() && (hasBottomBorder(currentBlock) || hasTopBorder(belowBlock))) {
+      // move to bottom should not have bottom border
+      LogUtil.log("[DEBUG-isHavingValidMoveRequest]: can not move [%s@%s] to bottom because there is bottom border", actorName, actorId);
+      return false;
+    }
+    return true;
+  }
+
   protected boolean isCurrentPositionDivisibleByBlockSize(Actor actor) {
     return actor.getX() % BLOCK_SIZE == 0 && actor.getY() % BLOCK_SIZE == 0;
   }
 
   protected int computeBlockIndexFromCurrentPosition(Actor actor) {
     return actor.getX() / BLOCK_SIZE + COLUMNS * (actor.getY() / BLOCK_SIZE);
-  }
-
-  protected boolean isHavingValidMoveRequest(Actor actor) {
-
-    int blockIndex = computeBlockIndexFromCurrentPosition(actor);
-    short currentBlock = getScreenDataAtIndex(blockIndex);
-    short nextBlock = getScreenDataAtIndex(blockIndex + 1);
-    short belowBlock = getScreenDataAtIndex(blockIndex + COLUMNS);
-    String actorName = actor.getClass().getSimpleName();
-    boolean currentPositionIsDivisibleByBlockSize = isCurrentPositionDivisibleByBlockSize(actor);
-
-    LogUtil.log("[DEBUG-isHavingValidMoveRequest]: current position of %s: (%d, %d)", actorName, actor.getX(), actor.getY());
-    if(!currentPositionIsDivisibleByBlockSize) return true;
-
-    if (actor.isMovingLeft() && hasLeftBorder(currentBlock)) {
-      // move to left should not have left border
-      LogUtil.log("[DEBUG-isHavingValidMoveRequest]: can not move %s to left because there is left border", actorName);
-      return false;
-    } else if (actor.isMovingUp() && hasTopBorder(currentBlock)) {
-      // move to top should not have top border
-      LogUtil.log("[DEBUG-isHavingValidMoveRequest]: can not move %s to top because there is top border", actorName);
-      return false;
-    } else if (actor.isMovingRight() && (hasRightBorder(currentBlock) || hasLeftBorder(nextBlock))) {
-      // move to right should not have right border
-      LogUtil.log("[DEBUG-isHavingValidMoveRequest]: can not move %s to right because there is right border", actorName);
-      return false;
-    } else if (actor.isMovingDown() && (hasBottomBorder(currentBlock) || hasTopBorder(belowBlock))) {
-      // move to bottom should not have bottom border
-      LogUtil.log("[DEBUG-isHavingValidMoveRequest]: can not move %s to bottom because there is bottom border", actorName);
-      return false;
-    }
-    return true;
-
   }
 
 }

@@ -16,6 +16,7 @@ import java.awt.image.ImageObserver;
 public class Pacman extends Actor {
 
   private final int INITIAL_SPEED = 5;
+  private final int EXPECTED_MAX_BULLET = Maze.ROWS / 4 - 1;
   private List<Bullet> bullets;
 
   public Pacman() {
@@ -35,6 +36,7 @@ public class Pacman extends Actor {
 
   private void initialize() {
 
+    this.id = 0;
     this.x = 15 * Maze.BLOCK_SIZE;
     this.y = 31 * Maze.BLOCK_SIZE;
     this.deltaX = 0;
@@ -44,13 +46,12 @@ public class Pacman extends Actor {
     this.direction = Direction.UP;
     this.speed = INITIAL_SPEED;
     this.bullets = new LinkedList<>();
-    bullets.add(new Bullet(this));
   }
 
   @Override
   public void move(Graphics2D graphics2D, ImageObserver imageObserver, Maze maze) {
     boolean isMoving = this.isMoving();
-    boolean hasValidMoveRequest = maze.isHavingValidMoveRequest(this);
+    boolean hasValidMoveRequest = maze.hasValidMoveRequest(this);
     boolean canMove = this.canMove();
     //LogUtil.log("[DEBUG-pacman.move]: hasValidMoveRequest = " + hasValidMoveRequest);
     //LogUtil.log("[DEBUG-pacman.move]: canMove = " + canMove);
@@ -79,6 +80,7 @@ public class Pacman extends Actor {
 
   public void moveBullets(Graphics2D graphics2D, ImageObserver imageObserver, Maze maze) {
     for (Bullet bullet : bullets) {
+      if (!bullet.isMoving()) continue;
       bullet.move(graphics2D, imageObserver, maze);
     }
   }
@@ -91,13 +93,16 @@ public class Pacman extends Actor {
     LogUtil.log("[DEBUG-fire]: canFire = " + canFire);
     if (!canFire) return;
 
-    LogUtil.log("[DEBUG-fire]: reset bullet position");
     Bullet bullet = getBulletToFire();
+    LogUtil.log("[DEBUG-fire]: bullet to fire: %s", bullet.getId());
+    LogUtil.log("[DEBUG-fire]: reset bullet position");
     bullet.setX(this.x);
     bullet.setY(this.y);
     bullet.resetCumulativeDelta();
     bullet.setHasCollisionWithWall(false);
-    //bullet.setSpeed(1); //? used when demo FEAT3
+
+    //? used when demo FEAT3
+    // bullet.setSpeed(1);
 
     if (isMovingLeft()) {
       bullet.requestToMoveLeft();
@@ -122,7 +127,8 @@ public class Pacman extends Actor {
     if (bullet != null) return bullet;
 
     // if not found, create new bullet
-    bullet = new Bullet(this);
+    int bulletId = bullets.size() + 1;
+    bullet = new Bullet(this, bulletId);
     bullets.add(bullet);
     return bullet;
   }

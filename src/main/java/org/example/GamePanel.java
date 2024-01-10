@@ -75,7 +75,7 @@ public class GamePanel extends JPanel implements ActionListener {
     String start = "Press ENTER to start";
     graphics2D.setColor(Color.yellow);
     graphics2D.setFont(textFont);
-    graphics2D.drawString(start, Maze.SCREEN_WIDTH / 4 + 10, Maze.SCREEN_HEIGHT / 2);
+    graphics2D.drawString(start, Maze.SCREEN_WIDTH / 4 + 10, Maze.SCREEN_HEIGHT + 20);
   }
 
   class TAdapter extends KeyAdapter {
