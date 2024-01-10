@@ -67,7 +67,7 @@ public class GamePanel extends JPanel implements ActionListener {
 
   private void playGame(Graphics2D graphics2D) {
     pacman.move(graphics2D, this, maze);
-    //pacman.getBullet().move(graphics2D, this, maze);
+    pacman.moveBullets(graphics2D, this, maze);
   }
 
   private void showIntroScreen(Graphics2D graphics2D) {
@@ -86,19 +86,26 @@ public class GamePanel extends JPanel implements ActionListener {
 
       if (isGameRunning) {
         if (key == KeyEvent.VK_A) {
+          //LogUtil.log("[EVENT]: request pacman to move left");
           pacman.requestToMoveLeft();
         } else if (key == KeyEvent.VK_D) {
+          //LogUtil.log("[EVENT]: request pacman to move right");
           pacman.requestToMoveRight();
         } else if (key == KeyEvent.VK_W) {
+          //LogUtil.log("[EVENT]: request pacman to move up");
           pacman.requestToMoveUp();
         } else if (key == KeyEvent.VK_S) {
+          //LogUtil.log("[EVENT]: request pacman to move down");
           pacman.requestToMoveDown();
         } else if (key == KeyEvent.VK_SPACE) {
+          LogUtil.log("[EVENT]: fire bullet");
           pacman.fire();
         } else if (key == KeyEvent.VK_Q && timer.isRunning()) {
+          LogUtil.log("[EVENT]: pause game");
           isGameRunning = false;
           FileUtil.clearFile(logFile);
           LogUtil.dumpLog(logFile);
+          LogUtil.clearLogTrace();
         }
       } else {
         if (key == KeyEvent.VK_ENTER) {

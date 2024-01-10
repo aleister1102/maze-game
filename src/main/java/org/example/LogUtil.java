@@ -27,5 +27,9 @@ public class LogUtil {
     logTrace.forEach(message -> FileUtil.write(message, logFile));
   }
 
+  public static void clearLogTrace() {
+    logTrace.clear();
+  }
+
 }
 

@@ -2,6 +2,7 @@ package org.example;
 
 import java.awt.Graphics2D;
 import java.awt.image.ImageObserver;
+import java.math.BigInteger;
 import javax.swing.ImageIcon;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -22,6 +23,7 @@ public class Bullet extends Actor {
     this.x = pacman.getX();
     this.y = pacman.getY();
     this.direction = Direction.STAY;
+    //* FEAT2: speed of bullet is 4 times faster than pacman
     this.speed = pacman.getSpeed() * SPEED_MULTIPLIER;
   }
 
@@ -63,5 +65,16 @@ public class Bullet extends Actor {
     }
   }
 
+  public String toString() {
+    return String.format(
+      "[Bullet(hashCode=%s, hasCollisionWithWall=%s, isMoving=%s, requestDeltaX=%d, requestDeltaY=%d, cumulativeDeltaX=%d, cumulativeDeltaY=%d)]",
+      BigInteger.valueOf(this.hashCode()),
+      this.hasCollisionWithWall,
+      this.isMoving(),
+      this.requestDeltaX,
+      this.requestDeltaY,
+      this.cumulativeDeltaX,
+      this.cumulativeDeltaY);
+  }
 
 }
