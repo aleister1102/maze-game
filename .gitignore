@@ -44,3 +44,4 @@ bin/
 .idea\
 /src/main/resources/logs/logs.txt
 /src/main/resources/logs/*.txt
+20120356.zip
