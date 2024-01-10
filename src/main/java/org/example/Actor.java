@@ -3,11 +3,17 @@ package org.example;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.ImageObserver;
+import java.util.List;
 import lombok.Data;
 import static org.example.Maze.BLOCK_SIZE;
 import static org.example.Maze.COLUMNS;
 import static org.example.Maze.SCREEN_HEIGHT;
 import static org.example.Maze.SCREEN_WIDTH;
+import static org.example.Maze.getScreenDataAtIndex;
+import static org.example.Maze.hasBottomBorder;
+import static org.example.Maze.hasLeftBorder;
+import static org.example.Maze.hasRightBorder;
+import static org.example.Maze.hasTopBorder;
 
 @Data
 public abstract class Actor {
@@ -93,8 +99,72 @@ public abstract class Actor {
 
   public abstract void move(Graphics2D graphics, ImageObserver observer, Maze maze);
 
-  public boolean isCurrentPositionDivisibleByBlockSize() {
-    return this.x % BLOCK_SIZE == 0 && this.y % BLOCK_SIZE == 0;
+  protected boolean hasInvalidMoveRequest() {
+    return !hasValidMoveRequest();
+  }
+
+  protected boolean hasValidMoveRequest() {
+    //LogUtil.log("[DEBUG-hasValidMoveRequest]: current position of [%s@%s]: (%d, %d)", this.getClass().getSimpleName(), id, x, y);
+
+    boolean currentPositionIsDivisibleByBlockSize = this.isCurrentPositionDivisibleByBlockSize();
+    boolean isOppositeToWall = this.isOppositeToWall();
+    boolean thereIsAPlayerAhead = this.isThereAPlayerAhead();
+    if (!currentPositionIsDivisibleByBlockSize) return true;
+    return !isOppositeToWall && !thereIsAPlayerAhead;
+  }
+
+  protected boolean isOppositeToWall() {
+    String actorName = this.getClass().getSimpleName();
+    int blockIndex = this.computeBlockIndexFromCurrentPosition();
+    short currentBlock = getScreenDataAtIndex(blockIndex);
+    short nextBlock = getScreenDataAtIndex(blockIndex + 1);
+    short belowBlock = getScreenDataAtIndex(blockIndex + COLUMNS);
+
+    if (this.isMovingLeft() && hasLeftBorder(currentBlock)) {
+      LogUtil.log("[DEBUG-isOppositeToWall]: can not move [%s@%s] to left because there is left border", actorName, id);
+      return true;
+    } else if (this.isMovingUp() && hasTopBorder(currentBlock)) {
+      LogUtil.log("[DEBUG-isOppositeToWall]: can not move [%s@%s] to top because there is top border", actorName, id);
+      return true;
+    } else if (this.isMovingRight() && ((hasRightBorder(currentBlock) || hasLeftBorder(nextBlock)))) {
+      LogUtil.log("[DEBUG-isOppositeToWall]: can not move [%s@%s] to right because there is right border", actorName, id);
+      return true;
+    } else if (this.isMovingDown() && ((hasBottomBorder(currentBlock) || hasTopBorder(belowBlock)))) {
+      LogUtil.log("[DEBUG-isOppositeToWall]: can not move [%s@%s] to bottom because there is bottom border", actorName, id);
+      return true;
+    }
+    return false;
+  }
+
+  //* FEAT7: two players can not be at the same block
+  protected boolean isThereAPlayerAhead() {
+    int blockIndex = this.computeBlockIndexFromCurrentPosition();
+    String actorName = this.getClass().getSimpleName();
+
+    if (this.isMovingLeft() && isThereAPlayerAtBlockIndex(blockIndex - 1)) {
+      LogUtil.log("[DEBUG-isThereAPlayerAhead]: can not move [%s@%s] to left because there is player at that position", actorName, id);
+      return true;
+    } else if (this.isMovingUp() && isThereAPlayerAtBlockIndex(blockIndex - COLUMNS)) {
+      LogUtil.log("[DEBUG-isThereAPlayerAhead]: can not move [%s@%s] to top because there is player at that position", actorName, id);
+      return true;
+    } else if (this.isMovingRight() && isThereAPlayerAtBlockIndex(blockIndex + 1)) {
+      LogUtil.log("[DEBUG-isThereAPlayerAhead]: can not move [%s@%s] to right because there is player at that position", actorName, id);
+      return true;
+    } else if (this.isMovingDown() && isThereAPlayerAtBlockIndex(blockIndex + COLUMNS)) {
+      LogUtil.log("[DEBUG-isThereAPlayerAhead]: can not move [%s@%s] to bottom because there is player at that position", actorName, id);
+      return true;
+    }
+    return false;
+  }
+
+  private boolean isThereAPlayerAtBlockIndex(int blockIndexToCheck) {
+    List<Player> players = GamePanel.players;
+
+    for (Player player : players) {
+      int blockIndex = player.computeBlockIndexFromCurrentPosition();
+      if (blockIndex == blockIndexToCheck) return true;
+    }
+    return false;
   }
 
   public int computeBlockIndexFromCurrentPosition() {
@@ -107,6 +177,10 @@ public abstract class Actor {
       deltaX = requestDeltaX;
       deltaY = requestDeltaY;
     }
+  }
+
+  public boolean isCurrentPositionDivisibleByBlockSize() {
+    return this.x % BLOCK_SIZE == 0 && this.y % BLOCK_SIZE == 0;
   }
 
   protected void draw(Graphics2D graphics2D, ImageObserver observer) {

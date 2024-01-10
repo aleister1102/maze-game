@@ -6,7 +6,6 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
 import lombok.Data;
 
@@ -78,6 +77,12 @@ public class Maze {
     }
 
     return screenData[index];
+  }
+
+  public static Pair<Integer, Integer> computePositionFromBlockIndex(int blockIndex) {
+    int x = blockIndex % COLUMNS * BLOCK_SIZE;
+    int y = blockIndex / COLUMNS * BLOCK_SIZE;
+    return new Pair<>(x, y);
   }
 
   private void generateRandomMaze(short[] mapData) {
@@ -172,22 +177,22 @@ public class Maze {
     }
   }
 
-  private static boolean hasLeftBorder(short block) {
+  public static boolean hasLeftBorder(short block) {
 
     return (block & 1) != 0;
   }
 
-  private static boolean hasTopBorder(short block) {
+  public static boolean hasTopBorder(short block) {
 
     return (block & 2) != 0;
   }
 
-  private static boolean hasRightBorder(short block) {
+  public static boolean hasRightBorder(short block) {
 
     return (block & 4) != 0;
   }
 
-  private static boolean hasBottomBorder(short block) {
+  public static boolean hasBottomBorder(short block) {
 
     return (block & 8) != 0;
   }
@@ -197,105 +202,9 @@ public class Maze {
     graphics2D.drawString(String.valueOf(blockIndex), x + 5, y + 15);
   }
 
-  protected boolean hasInvalidMoveRequest(Actor actor) {
-    return !hasValidMoveRequest(actor);
-  }
-
-  protected boolean hasValidMoveRequest(Actor actor) {
-
-    String actorName = actor.getClass().getSimpleName();
-    int actorId = actor.getId();
-    int blockIndex = actor.computeBlockIndexFromCurrentPosition();
-    short currentBlock = getScreenDataAtIndex(blockIndex);
-    short nextBlock = getScreenDataAtIndex(blockIndex + 1);
-    short belowBlock = getScreenDataAtIndex(blockIndex + COLUMNS);
-    boolean currentPositionIsDivisibleByBlockSize = actor.isCurrentPositionDivisibleByBlockSize();
-
-    //LogUtil.log("[DEBUG-hasValidMoveRequest]: current position of [%s@%s]: (%d, %d)",
-    //  actorName, actorId, actor.getX(), actor.getY());
-    if (!currentPositionIsDivisibleByBlockSize) return true;
-
-    if (actor.isMovingLeft()) {
-      if (hasLeftBorder(currentBlock)) {
-        // move to left should not have left border
-        //LogUtil.log("[DEBUG-hasValidMoveRequest]: can not move [%s@%s] to left because there is left border", actorName, actorId);
-        return false;
-      }
-      if (isThereAPlayerAtBlockIndex(blockIndex - 1)) {
-        // check if there is a player at the block to the left
-        LogUtil.log("[DEBUG-hasValidMoveRequest]: can not move [%s@%s] to left because there is player at that position", actorName, actorId);
-        return false;
-      }
-    } else if (actor.isMovingUp()) {
-      if (hasTopBorder(currentBlock)) {
-        // move to top should not have top border
-        //LogUtil.log("[DEBUG-hasValidMoveRequest]: can not move [%s@%s] to top because there is top border", actorName, actorId);
-        return false;
-      }
-      if (isThereAPlayerAtBlockIndex(blockIndex - COLUMNS)) {
-        // check if there is a player at the block to the top
-        LogUtil.log("[DEBUG-hasValidMoveRequest]: can not move [%s@%s] to top because there is player at that position", actorName, actorId);
-        return false;
-      }
-    } else if (actor.isMovingRight()) {
-      if ((hasRightBorder(currentBlock) || hasLeftBorder(nextBlock))) {
-        // move to right should not have right border
-        //LogUtil.log("[DEBUG-hasValidMoveRequest]: can not move [%s@%s] to right because there is right border", actorName, actorId);
-        return false;
-      }
-      if (isThereAPlayerAtBlockIndex(blockIndex + 1)) {
-        // check if there is a player at the block to the right
-        LogUtil.log("[DEBUG-hasValidMoveRequest]: can not move [%s@%s] to right because there is player at that position", actorName, actorId);
-        return false;
-      }
-    } else if (actor.isMovingDown()) {
-      if ((hasBottomBorder(currentBlock) || hasTopBorder(belowBlock))) {
-        // move to bottom should not have bottom border
-        //LogUtil.log("[DEBUG-hasValidMoveRequest]: can not move [%s@%s] to bottom because there is bottom border", actorName, actorId);
-        return false;
-      }
-      if (isThereAPlayerAtBlockIndex(blockIndex + COLUMNS)) {
-        // check if there is a player at the block to the bottom
-        LogUtil.log("[DEBUG-hasValidMoveRequest]: can not move [%s@%s] to bottom because there is player at that position", actorName, actorId);
-        return false;
-      }
-    }
-    return true;
-  }
-
-  //* FEAT7: two players can not be at the same block
-  private boolean isThereAPlayerAtBlockIndex(int blockIndexToCheck) {
-    List<Player> players = GamePanel.players;
-
-    for (Player player : players) {
-      int blockIndex = player.computeBlockIndexFromCurrentPosition();
-      if (blockIndex == blockIndexToCheck) return true;
-    }
-    return false;
-  }
-
-  public static Pair<Integer, Integer> computePositionFromBlockIndex(int blockIndex) {
-    int x = blockIndex % COLUMNS * BLOCK_SIZE;
-    int y = blockIndex / COLUMNS * BLOCK_SIZE;
-    return new Pair<>(x, y);
-  }
-
-  public static boolean isOppositeToWall(Actor actor) {
-    int id = actor.getId();
-    int blockIndex = actor.computeBlockIndexFromCurrentPosition();
-    short currentBlock = getScreenDataAtIndex(blockIndex);
-    short previousBlock = getScreenDataAtIndex(blockIndex - 1);
-    short nextBlock = getScreenDataAtIndex(blockIndex + 1);
-    short aboveBlock = getScreenDataAtIndex(blockIndex - COLUMNS);
-    short belowBlock = getScreenDataAtIndex(blockIndex + COLUMNS);
-
-    if (actor.isMovingLeft() && (hasLeftBorder(currentBlock) || hasRightBorder(previousBlock))) {
-      return true;
-    } else if (actor.isMovingUp() && (hasTopBorder(currentBlock) || hasBottomBorder(aboveBlock))) {
-      return true;
-    } else if (actor.isMovingRight() && ((hasRightBorder(currentBlock) || hasLeftBorder(nextBlock)))) {
-      return true;
-    } else return actor.isMovingDown() && ((hasBottomBorder(currentBlock) || hasTopBorder(belowBlock)));
+  public static boolean isAdjacentBlockIndexes(int i, int j) {
+    if (i == j - 1 || j == i - 1) return true;
+    else return i == j - COLUMNS || j == i - COLUMNS;
   }
 
 }

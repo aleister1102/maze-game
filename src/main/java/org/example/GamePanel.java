@@ -59,11 +59,6 @@ public class GamePanel extends JPanel implements ActionListener {
     repeatedKeyCount = 0;
   }
 
-  private void reset() {
-    previousKey = 0;
-    repeatedKeyCount = 0;
-  }
-
   public void paintComponent(Graphics g) {
 
     super.paintComponent(g);
@@ -149,7 +144,6 @@ public class GamePanel extends JPanel implements ActionListener {
       } else {
         if (key == KeyEvent.VK_ENTER) {
           isGameRunning = true;
-          reset();
         }
       }
     }

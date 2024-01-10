@@ -28,6 +28,21 @@ public class Player extends Actor {
   private final int EXPECTED_MAX_BULLET = ROWS / MINIMUM_BULLET_DISTANCE;
   private List<Bullet> bullets;
 
+  public String toString() {
+    return String.format(
+      "[Player(id=%s, x=%s, y=%s, blockIndex=%s, direction=%s, isMoving=%s, requestDeltaX=%d, requestDeltaY=%d, cumulativeDeltaX=%d, cumulativeDeltaY=%d)]",
+      this.id,
+      this.x,
+      this.y,
+      this.computeBlockIndexFromCurrentPosition(),
+      this.direction,
+      this.isMoving(),
+      this.requestDeltaX,
+      this.requestDeltaY,
+      this.cumulativeDeltaX,
+      this.cumulativeDeltaY);
+  }
+
   public Player() {
 
     loadImages();
@@ -60,7 +75,7 @@ public class Player extends Actor {
   @Override
   public void move(Graphics2D graphics2D, ImageObserver imageObserver, Maze maze) {
     boolean isMoving = this.isMoving();
-    boolean hasValidMoveRequest = maze.hasValidMoveRequest(this);
+    boolean hasValidMoveRequest = this.hasValidMoveRequest();
     boolean canMove = this.canMove();
     //LogUtil.log("[DEBUG-pacman.move]: hasValidMoveRequest = " + hasValidMoveRequest);
     //LogUtil.log("[DEBUG-pacman.move]: canMove = " + canMove);
@@ -115,7 +130,7 @@ public class Player extends Actor {
     bullet.setX(this.x);
     bullet.setY(this.y);
     bullet.resetCumulativeDelta();
-    bullet.setHasCollisionWithWall(false);
+    bullet.setHasCollision(false);
 
     //? used when demo FEAT3
     // bullet.setSpeed(1);
@@ -175,17 +190,17 @@ public class Player extends Actor {
     for (int i = 0; i < numberOfPlayers; i++) {
       Player randomPlayer = new Player();
       randomPlayer.setId(i);
-      randomPlayer.randomPlayerState(randomPlayer, randomPlayers);
+      randomPlayer.randomPlayerState(randomPlayers);
       randomPlayers.add(randomPlayer);
     }
     return randomPlayers;
   }
 
-  private void randomPlayerState(Player player, List<Player> players) {
+  public void randomPlayerState(List<Player> players) {
     boolean canNotRandomDirectionFromCurrentPosition = true;
     while (canNotRandomDirectionFromCurrentPosition) {
-      player.randomPosition(players);
-      canNotRandomDirectionFromCurrentPosition = !player.randomDirection();
+      this.randomPosition(players);
+      canNotRandomDirectionFromCurrentPosition = !this.randomDirection();
     }
   }
 
@@ -198,7 +213,7 @@ public class Player extends Actor {
       Pair<Integer, Integer> position = Maze.computePositionFromBlockIndex(randomBlockIndex);
       this.x = position.getFirst();
       this.y = position.getSecond();
-      isAtSamePlaceWithOtherPlayers = isAtSamePlaceWithOtherPlayers(players);
+      isAtSamePlaceWithOtherPlayers = this.isAtSamePlaceWithOtherPlayers(players);
     }
   }
 
@@ -227,7 +242,7 @@ public class Player extends Actor {
         this.direction = Direction.DOWN;
       }
 
-      isOppositeToWall = Maze.isOppositeToWall(this);
+      isOppositeToWall = this.isOppositeToWall();
       LogUtil.log("[DEBUG-randomDirection]: current position (%s, %s) of player %s is opposite to wall? %s",
         this.computeBlockIndexFromCurrentPosition(), this.direction, this.id, isOppositeToWall);
 
@@ -249,21 +264,6 @@ public class Player extends Actor {
       player.move(graphics2D, imageObserver, maze);
       player.moveBullets(graphics2D, imageObserver, maze);
     }
-  }
-
-  public String toString() {
-    return String.format(
-      "[Player(id=%s, x=%s, y=%s, blockIndex=%s, direction=%s, isMoving=%s, requestDeltaX=%d, requestDeltaY=%d, cumulativeDeltaX=%d, cumulativeDeltaY=%d)]",
-      this.id,
-      this.x,
-      this.y,
-      computeBlockIndexFromCurrentPosition(),
-      this.direction,
-      this.isMoving(),
-      this.requestDeltaX,
-      this.requestDeltaY,
-      this.cumulativeDeltaX,
-      this.cumulativeDeltaY);
   }
 
 }
