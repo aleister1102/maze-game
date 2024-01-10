@@ -4,6 +4,10 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.ImageObserver;
 import lombok.Data;
+import static org.example.Maze.BLOCK_SIZE;
+import static org.example.Maze.COLUMNS;
+import static org.example.Maze.SCREEN_HEIGHT;
+import static org.example.Maze.SCREEN_WIDTH;
 
 @Data
 public abstract class Actor {
@@ -89,8 +93,16 @@ public abstract class Actor {
 
   public abstract void move(Graphics2D graphics, ImageObserver observer, Maze maze);
 
-  protected void updateDeltaBasedOnMoveRequest(Maze maze) {
-    boolean currentPositionIsDivisibleByBlockSize = maze.isCurrentPositionDivisibleByBlockSize(this);
+  public boolean isCurrentPositionDivisibleByBlockSize() {
+    return this.x % BLOCK_SIZE == 0 && this.y % BLOCK_SIZE == 0;
+  }
+
+  public int computeBlockIndexFromCurrentPosition() {
+    return this.x / BLOCK_SIZE + COLUMNS * (this.y / BLOCK_SIZE);
+  }
+
+  protected void updateDeltaBasedOnMoveRequest() {
+    boolean currentPositionIsDivisibleByBlockSize = isCurrentPositionDivisibleByBlockSize();
     if (currentPositionIsDivisibleByBlockSize) {
       deltaX = requestDeltaX;
       deltaY = requestDeltaY;
@@ -139,7 +151,7 @@ public abstract class Actor {
   }
 
   protected boolean isOutsideTheWall() {
-    return this.x < 0 || this.y < 0 || this.x > Maze.SCREEN_WIDTH || this.y > Maze.SCREEN_HEIGHT;
+    return this.x < 0 || this.y < 0 || this.x > SCREEN_WIDTH || this.y > SCREEN_HEIGHT;
   }
 
 }

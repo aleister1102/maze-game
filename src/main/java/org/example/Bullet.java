@@ -47,7 +47,7 @@ public class Bullet extends Actor {
     if (notMoving) return;
     if (hasInvalidMoveRequest || isOutsideTheWall) hasCollisionWithWall = true;
     else {
-      updateDeltaBasedOnMoveRequest(maze);
+      updateDeltaBasedOnMoveRequest();
       updatePosition();
       draw(graphics, imageObserver);
     }
@@ -55,7 +55,7 @@ public class Bullet extends Actor {
   }
 
   @Override
-  protected void updateDeltaBasedOnMoveRequest(Maze maze) {
+  protected void updateDeltaBasedOnMoveRequest() {
     //? allow bullet to move out of the wall
     deltaX = requestDeltaX;
     deltaY = requestDeltaY;
@@ -75,7 +75,7 @@ public class Bullet extends Actor {
       graphics2D.drawImage(down, x + 1, y + 1, imageObserver);
     }
     graphics2D.setColor(Color.magenta);
-    graphics2D.drawString(String.valueOf(id), x + 3, y + 1);
+    graphics2D.drawString(String.valueOf(id), x + 2, y + 1);
   }
 
   public String toString() {

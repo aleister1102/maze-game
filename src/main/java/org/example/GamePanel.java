@@ -17,6 +17,8 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import static org.example.Maze.SCREEN_HEIGHT;
+import static org.example.Maze.SCREEN_WIDTH;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -48,7 +50,7 @@ public class GamePanel extends JPanel implements ActionListener {
     dimension = new Dimension(MazeGame.screenWidth, MazeGame.screenHeight);
     textFont = new Font("Arial", Font.BOLD, 14);
     maze = new Maze();
-    players = Player.randomPlayers(maze, NUMBER_OF_PLAYERS);
+    players = Player.randomPlayers(NUMBER_OF_PLAYERS);
     LogUtil.log("[DEBUG]: players:\n" + players.stream().map(Player::toString).collect(Collectors.joining("\n")));
     timer = new Timer(40, this);
     timer.start();
@@ -89,7 +91,7 @@ public class GamePanel extends JPanel implements ActionListener {
     String start = "Press ENTER to start";
     graphics2D.setColor(Color.yellow);
     graphics2D.setFont(textFont);
-    graphics2D.drawString(start, Maze.SCREEN_WIDTH / 4 + 10, Maze.SCREEN_HEIGHT + 20);
+    graphics2D.drawString(start, SCREEN_WIDTH / 4 + 10, SCREEN_HEIGHT + 20);
   }
 
   private void showKeyPressed(Graphics2D graphics2D) {
@@ -101,7 +103,7 @@ public class GamePanel extends JPanel implements ActionListener {
 
     graphics2D.setColor(Color.white);
     graphics2D.setFont(textFont);
-    graphics2D.drawString(displayKey, 10, Maze.SCREEN_HEIGHT + 20);
+    graphics2D.drawString(displayKey, 10, SCREEN_HEIGHT + 20);
   }
 
   class TAdapter extends KeyAdapter {

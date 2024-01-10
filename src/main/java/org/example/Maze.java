@@ -15,8 +15,8 @@ public class Maze {
   public static final int BLOCK_SIZE = 20;
   public static final int ROWS = 32;
   public static final int COLUMNS = 16;
-  public static final int SCREEN_HEIGHT = Maze.ROWS * Maze.BLOCK_SIZE;
-  public static final int SCREEN_WIDTH = Maze.COLUMNS * Maze.BLOCK_SIZE;
+  public static final int SCREEN_HEIGHT = ROWS * BLOCK_SIZE;
+  public static final int SCREEN_WIDTH = COLUMNS * BLOCK_SIZE;
 
   public static final short LEFT_BORDER = 1;
   public static final short TOP_BORDER = 2;
@@ -145,8 +145,8 @@ public class Maze {
     graphics2D.setStroke(new BasicStroke(4));
 
     short blockIndex = 0;
-    for (int y = 0; y < SCREEN_HEIGHT; y += Maze.BLOCK_SIZE) {
-      for (int x = 0; x < SCREEN_WIDTH; x += Maze.BLOCK_SIZE) {
+    for (int y = 0; y < SCREEN_HEIGHT; y += BLOCK_SIZE) {
+      for (int x = 0; x < SCREEN_WIDTH; x += BLOCK_SIZE) {
         short block = this.getScreenDataAtIndex(blockIndex);
 
         this.drawWall(graphics2D, x, y, block);
@@ -161,22 +161,22 @@ public class Maze {
 
     graphics2D.setColor(new Color(112, 32, 224));
     if (hasLeftBorder(block)) {
-      graphics2D.drawLine(x, y, x, y + Maze.BLOCK_SIZE - 1);
+      graphics2D.drawLine(x, y, x, y + BLOCK_SIZE - 1);
     }
 
     if (hasRightBorder(block)) {
-      graphics2D.drawLine(x + Maze.BLOCK_SIZE - 1, y, x + Maze.BLOCK_SIZE - 1,
-        y + Maze.BLOCK_SIZE - 1);
+      graphics2D.drawLine(x + BLOCK_SIZE - 1, y, x + BLOCK_SIZE - 1,
+        y + BLOCK_SIZE - 1);
     }
 
     graphics2D.setColor(new Color(47, 193, 206));
     if (hasTopBorder(block)) {
-      graphics2D.drawLine(x, y, x + Maze.BLOCK_SIZE - 1, y);
+      graphics2D.drawLine(x, y, x + BLOCK_SIZE - 1, y);
     }
 
     if (hasBottomBorder(block)) {
-      graphics2D.drawLine(x, y + Maze.BLOCK_SIZE - 1, x + Maze.BLOCK_SIZE - 1,
-        y + Maze.BLOCK_SIZE - 1);
+      graphics2D.drawLine(x, y + BLOCK_SIZE - 1, x + BLOCK_SIZE - 1,
+        y + BLOCK_SIZE - 1);
     }
   }
 
@@ -213,11 +213,11 @@ public class Maze {
 
     String actorName = actor.getClass().getSimpleName();
     int actorId = actor.getId();
-    int blockIndex = computeBlockIndexFromCurrentPosition(actor);
+    int blockIndex = actor.computeBlockIndexFromCurrentPosition();
     short currentBlock = getScreenDataAtIndex(blockIndex);
     short nextBlock = getScreenDataAtIndex(blockIndex + 1);
     short belowBlock = getScreenDataAtIndex(blockIndex + COLUMNS);
-    boolean currentPositionIsDivisibleByBlockSize = isCurrentPositionDivisibleByBlockSize(actor);
+    boolean currentPositionIsDivisibleByBlockSize = actor.isCurrentPositionDivisibleByBlockSize();
 
     //LogUtil.log("[DEBUG-hasValidMoveRequest]: current position of [%s@%s]: (%d, %d)",
     //  actorName, actorId, actor.getX(), actor.getY());
@@ -243,15 +243,7 @@ public class Maze {
     return true;
   }
 
-  protected boolean isCurrentPositionDivisibleByBlockSize(Actor actor) {
-    return actor.getX() % BLOCK_SIZE == 0 && actor.getY() % BLOCK_SIZE == 0;
-  }
-
-  protected int computeBlockIndexFromCurrentPosition(Actor actor) {
-    return actor.getX() / BLOCK_SIZE + COLUMNS * (actor.getY() / BLOCK_SIZE);
-  }
-
-  protected Pair<Integer, Integer> computePositionFromBlockIndex(int blockIndex) {
+  public static Pair<Integer, Integer> computePositionFromBlockIndex(int blockIndex) {
     int x = blockIndex % COLUMNS * BLOCK_SIZE;
     int y = blockIndex / COLUMNS * BLOCK_SIZE;
     return new Pair<>(x, y);

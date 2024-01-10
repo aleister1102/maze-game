@@ -13,6 +13,9 @@ import lombok.EqualsAndHashCode;
 import javax.swing.ImageIcon;
 import java.awt.Graphics2D;
 import java.awt.image.ImageObserver;
+import static org.example.Maze.BLOCK_SIZE;
+import static org.example.Maze.COLUMNS;
+import static org.example.Maze.ROWS;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -20,7 +23,7 @@ public class Player extends Actor {
 
   private final int INITIAL_SPEED = 5;
   private final int MINIMUM_BULLET_DISTANCE = 4;
-  private final int EXPECTED_MAX_BULLET = Maze.ROWS / MINIMUM_BULLET_DISTANCE;
+  private final int EXPECTED_MAX_BULLET = ROWS / MINIMUM_BULLET_DISTANCE;
   private List<Bullet> bullets;
 
   public Player() {
@@ -41,8 +44,8 @@ public class Player extends Actor {
   private void initialize() {
 
     this.id = 0;
-    this.x = 15 * Maze.BLOCK_SIZE;
-    this.y = 31 * Maze.BLOCK_SIZE;
+    this.x = 15 * BLOCK_SIZE;
+    this.y = 31 * BLOCK_SIZE;
     this.deltaX = 0;
     this.deltaY = 0;
     this.requestDeltaX = 0;
@@ -66,7 +69,7 @@ public class Player extends Actor {
       this.resetCumulativeDelta();
     } else if (canMove) {
       // can not move if has not moved at least 1 block
-      updateDeltaBasedOnMoveRequest(maze);
+      updateDeltaBasedOnMoveRequest();
       updatePosition();
       draw(graphics2D, imageObserver);
       //LogUtil.log("[DEBUG-pacman.move]: cumulativeDeltaX = " + this.cumulativeDeltaX);
@@ -79,7 +82,7 @@ public class Player extends Actor {
 
   private boolean canMove() {
 
-    return this.cumulativeDeltaX < Maze.BLOCK_SIZE && this.cumulativeDeltaY < Maze.BLOCK_SIZE;
+    return this.cumulativeDeltaX < BLOCK_SIZE && this.cumulativeDeltaY < BLOCK_SIZE;
   }
 
   @Override
@@ -156,33 +159,33 @@ public class Player extends Actor {
       int cumulativeDeltaY = bullet.cumulativeDeltaY;
 
       if (!isMoving) continue;
-      if ((direction.equals(Direction.LEFT) || direction.equals(Direction.RIGHT)) && (cumulativeDeltaX < Maze.BLOCK_SIZE * MINIMUM_BULLET_DISTANCE))
+      if ((direction.equals(Direction.LEFT) || direction.equals(Direction.RIGHT)) && (cumulativeDeltaX < BLOCK_SIZE * MINIMUM_BULLET_DISTANCE))
         return false;
-      else if ((direction.equals(Direction.UP) || direction.equals(Direction.DOWN)) && (cumulativeDeltaY < Maze.BLOCK_SIZE * MINIMUM_BULLET_DISTANCE))
+      else if ((direction.equals(Direction.UP) || direction.equals(Direction.DOWN)) && (cumulativeDeltaY < BLOCK_SIZE * MINIMUM_BULLET_DISTANCE))
         return false;
 
     }
     return true;
   }
 
-  public static List<Player> randomPlayers(Maze maze, int numberOfPlayers) {
+  public static List<Player> randomPlayers(int numberOfPlayers) {
     List<Player> randomPlayers = new LinkedList<>();
     for (int i = 0; i < numberOfPlayers; i++) {
       Player randomPlayer = new Player();
       randomPlayer.setId(i);
-      randomPlayer.randomPosition(maze, randomPlayers);
+      randomPlayer.randomPosition(randomPlayers);
       randomPlayer.randomDirection();
       randomPlayers.add(randomPlayer);
     }
     return randomPlayers;
   }
 
-  private void randomPosition(Maze maze, List<Player> players) {
+  private void randomPosition(List<Player> players) {
     Random random = new Random();
     boolean isAtSamePlaceWithOtherPlayers = true;
     while (isAtSamePlaceWithOtherPlayers) {
-      int randomBlockIndex = random.nextInt(Maze.ROWS * Maze.COLUMNS);
-      Pair<Integer, Integer> position = maze.computePositionFromBlockIndex(randomBlockIndex);
+      int randomBlockIndex = random.nextInt(ROWS * COLUMNS);
+      Pair<Integer, Integer> position = Maze.computePositionFromBlockIndex(randomBlockIndex);
       this.x = position.getFirst();
       this.y = position.getSecond();
       isAtSamePlaceWithOtherPlayers = isAtSamePlaceWithOtherPlayers(players);
