@@ -18,10 +18,10 @@ public class Maze {
   public static final int SCREEN_HEIGHT = Maze.ROWS * Maze.BLOCK_SIZE;
   public static final int SCREEN_WIDTH = Maze.COLUMNS * Maze.BLOCK_SIZE;
 
-  public static final int LEFT_BORDER = 1;
-  public static final int TOP_BORDER = 2;
-  public static final int RIGHT_BORDER = 4;
-  public static final int BOTTOM_BORDER = 8;
+  public static final short LEFT_BORDER = 1;
+  public static final short TOP_BORDER = 2;
+  public static final short RIGHT_BORDER = 4;
+  public static final short BOTTOM_BORDER = 8;
 
   // 0: blue obstacles, 16: white dots
   // 1: left border, 2: top border, 4: right border, 8: bottom border
@@ -117,12 +117,11 @@ public class Maze {
     // except for the first and last row and column
     for (int i = COLUMNS; i < (ROWS - 1) * COLUMNS; i++) {
       if (i % COLUMNS != 0 && i % COLUMNS != COLUMNS - 1) {
+        int willGenerateWall = random.nextInt(2);
+        if (willGenerateWall == 0) continue;
+
         int randomInt = random.nextInt(2);
-        if (randomInt == 0) {
-          mapData[i] += LEFT_BORDER;
-        } else {
-          mapData[i] += TOP_BORDER;
-        }
+        mapData[i] += randomInt == 0 ? LEFT_BORDER : TOP_BORDER;
       }
     }
   }

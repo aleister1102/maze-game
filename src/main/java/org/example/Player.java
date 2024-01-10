@@ -16,7 +16,8 @@ import java.awt.image.ImageObserver;
 public class Player extends Actor {
 
   private final int INITIAL_SPEED = 5;
-  private final int EXPECTED_MAX_BULLET = Maze.ROWS / 4 - 1;
+  private final int MINIMUM_BULLET_DISTANCE = 4;
+  private final int EXPECTED_MAX_BULLET = Maze.ROWS / MINIMUM_BULLET_DISTANCE;
   private List<Bullet> bullets;
 
   public Player() {
@@ -145,9 +146,9 @@ public class Player extends Actor {
       int cumulativeDeltaY = bullet.cumulativeDeltaY;
 
       if (!isMoving) continue;
-      if ((direction.equals(Direction.LEFT) || direction.equals(Direction.RIGHT)) && (cumulativeDeltaX < Maze.BLOCK_SIZE * 4))
+      if ((direction.equals(Direction.LEFT) || direction.equals(Direction.RIGHT)) && (cumulativeDeltaX < Maze.BLOCK_SIZE * MINIMUM_BULLET_DISTANCE))
         return false;
-      else if ((direction.equals(Direction.UP) || direction.equals(Direction.DOWN)) && (cumulativeDeltaY < Maze.BLOCK_SIZE * 4))
+      else if ((direction.equals(Direction.UP) || direction.equals(Direction.DOWN)) && (cumulativeDeltaY < Maze.BLOCK_SIZE * MINIMUM_BULLET_DISTANCE))
         return false;
 
     }
