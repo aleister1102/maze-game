@@ -1,10 +1,11 @@
-package org.example;
+package org.example.services;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import lombok.Data;
+import org.example.utils.LogUtil;
 
 @Data
 public class Receiver {

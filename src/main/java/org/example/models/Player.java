@@ -1,4 +1,4 @@
-package org.example;
+package org.example.models;
 
 
 import java.awt.Color;
@@ -15,9 +15,11 @@ import lombok.EqualsAndHashCode;
 import javax.swing.ImageIcon;
 import java.awt.Graphics2D;
 import java.awt.image.ImageObserver;
-import static org.example.Maze.BLOCK_SIZE;
-import static org.example.Maze.COLUMNS;
-import static org.example.Maze.ROWS;
+import org.example.constants.Direction;
+import org.example.utils.LogUtil;
+import static org.example.models.Maze.BLOCK_SIZE;
+import static org.example.models.Maze.COLUMNS;
+import static org.example.models.Maze.ROWS;
 
 @Data
 @EqualsAndHashCode(callSuper = true)

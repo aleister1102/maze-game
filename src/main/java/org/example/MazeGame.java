@@ -1,6 +1,10 @@
 package org.example;
 
 import javax.swing.JFrame;
+import org.example.services.Process;
+import org.example.services.Receiver;
+import org.example.services.Sender;
+import org.example.utils.ThreadUtil;
 
 public class MazeGame extends JFrame {
 

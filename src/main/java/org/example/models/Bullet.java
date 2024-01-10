@@ -1,4 +1,4 @@
-package org.example;
+package org.example.models;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -7,7 +7,10 @@ import java.util.List;
 import javax.swing.ImageIcon;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import static org.example.Maze.BLOCK_SIZE;
+import org.example.constants.Direction;
+import org.example.GamePanel;
+import org.example.utils.LogUtil;
+import static org.example.models.Maze.BLOCK_SIZE;
 
 @Data
 @EqualsAndHashCode(callSuper = true)

@@ -1,4 +1,4 @@
-package org.example;
+package org.example.services;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -8,6 +8,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import lombok.Data;
+import org.example.constants.Configuration;
+import org.example.models.Message;
+import org.example.utils.LogUtil;
+import org.example.utils.SocketUtil;
 
 @Data
 public class Sender {

@@ -1,4 +1,4 @@
-package org.example;
+package org.example.services;
 
 import java.io.File;
 import java.net.ServerSocket;
@@ -7,7 +7,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Scanner;
 import lombok.Data;
-import static org.example.LogUtil.LOG_DIRECTORY;
+import org.example.utils.FileUtil;
+import org.example.utils.LogUtil;
+import org.example.utils.SocketUtil;
+import static org.example.utils.LogUtil.LOG_DIRECTORY;
 
 @Data
 public class Process {

@@ -1,9 +1,10 @@
-package org.example;
+package org.example.models;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Builder;
 import lombok.Data;
+import org.example.utils.LogUtil;
 
 @Data
 @Builder

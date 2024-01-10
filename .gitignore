@@ -43,4 +43,4 @@ bin/
 .DS_Store.idea\
 .idea\
 /src/main/resources/logs/logs.txt
-logs\
+/src/main/resources/logs/*.txt

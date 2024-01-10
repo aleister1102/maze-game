@@ -12,13 +12,16 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import static org.example.Maze.SCREEN_HEIGHT;
-import static org.example.Maze.SCREEN_WIDTH;
+import org.example.models.Maze;
+import org.example.models.Player;
+import org.example.utils.FileUtil;
+import org.example.utils.LogUtil;
+import static org.example.models.Maze.SCREEN_HEIGHT;
+import static org.example.models.Maze.SCREEN_WIDTH;
 
 @Data
 @EqualsAndHashCode(callSuper = true)

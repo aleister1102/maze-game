@@ -1,19 +1,22 @@
-package org.example;
+package org.example.models;
 
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.ImageObserver;
 import java.util.List;
 import lombok.Data;
-import static org.example.Maze.BLOCK_SIZE;
-import static org.example.Maze.COLUMNS;
-import static org.example.Maze.SCREEN_HEIGHT;
-import static org.example.Maze.SCREEN_WIDTH;
-import static org.example.Maze.getScreenDataAtIndex;
-import static org.example.Maze.hasBottomBorder;
-import static org.example.Maze.hasLeftBorder;
-import static org.example.Maze.hasRightBorder;
-import static org.example.Maze.hasTopBorder;
+import org.example.constants.Direction;
+import org.example.GamePanel;
+import org.example.utils.LogUtil;
+import static org.example.models.Maze.BLOCK_SIZE;
+import static org.example.models.Maze.COLUMNS;
+import static org.example.models.Maze.SCREEN_HEIGHT;
+import static org.example.models.Maze.SCREEN_WIDTH;
+import static org.example.models.Maze.getScreenDataAtIndex;
+import static org.example.models.Maze.hasBottomBorder;
+import static org.example.models.Maze.hasLeftBorder;
+import static org.example.models.Maze.hasRightBorder;
+import static org.example.models.Maze.hasTopBorder;
 
 @Data
 public abstract class Actor {

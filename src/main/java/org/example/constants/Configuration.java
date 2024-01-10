@@ -1,4 +1,4 @@
-package org.example;
+package org.example.constants;
 
 import java.net.ServerSocket;
 import java.util.HashMap;
