@@ -22,12 +22,17 @@ public class LogUtil {
     System.out.println(messageWithTrimmedTimestamp);
   }
 
-  public static void dumpLog(File logFile) {
+  public static void writeAndClearLog(File logFile) {
+    writeLog(logFile);
+    clearLogTrace();
+  }
+
+  private static void writeLog(File logFile) {
     if (logFile == null) return;
     logTrace.forEach(message -> FileUtil.write(message, logFile));
   }
 
-  public static void clearLogTrace() {
+  private static void clearLogTrace() {
     logTrace.clear();
   }
 

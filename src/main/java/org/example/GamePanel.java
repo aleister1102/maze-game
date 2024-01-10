@@ -11,6 +11,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 import lombok.Data;
@@ -20,17 +22,18 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class GamePanel extends JPanel implements ActionListener {
 
-  private boolean isGameRunning = false;
-
+  private final int NUMBER_OF_PLAYERS = 4;
+  public static List<Player> players;
   private Dimension dimension;
   private Font textFont;
   private Graphics2D graphics2D;
   private Maze maze;
-  private Player player;
   private Timer timer;
   private File logFile;
+
   private int previousKey;
   private int repeatedKeyCount;
+  private boolean isGameRunning = false;
 
   public GamePanel() {
 
@@ -45,10 +48,17 @@ public class GamePanel extends JPanel implements ActionListener {
     dimension = new Dimension(MazeGame.screenWidth, MazeGame.screenHeight);
     textFont = new Font("Arial", Font.BOLD, 14);
     maze = new Maze();
-    player = new Player();
+    players = Player.randomPlayers(maze, NUMBER_OF_PLAYERS);
+    LogUtil.log("[DEBUG]: players:\n" + players.stream().map(Player::toString).collect(Collectors.joining("\n")));
     timer = new Timer(40, this);
     timer.start();
     logFile = FileUtil.createFile(LogUtil.LOG_FILE);
+    previousKey = 0;
+    repeatedKeyCount = 0;
+  }
+
+  private void reset() {
+    maze = new Maze();
     previousKey = 0;
     repeatedKeyCount = 0;
   }
@@ -71,8 +81,7 @@ public class GamePanel extends JPanel implements ActionListener {
   }
 
   private void playGame(Graphics2D graphics2D) {
-    player.move(graphics2D, this, maze);
-    player.moveBullets(graphics2D, this, maze);
+    Player.movePlayersAndTheirBullets(graphics2D, this, maze, players);
   }
 
   private void showIntroScreen(Graphics2D graphics2D) {
@@ -100,7 +109,6 @@ public class GamePanel extends JPanel implements ActionListener {
     @Override
     public void keyPressed(KeyEvent e) {
       int key = e.getKeyCode();
-
       if (key == previousKey) {
         repeatedKeyCount += 1;
       } else {
@@ -108,35 +116,39 @@ public class GamePanel extends JPanel implements ActionListener {
         repeatedKeyCount = 0;
       }
 
+      Player firstPlayer = players.get(0);
+      if (firstPlayer == null) return;
       if (isGameRunning) {
         if (key == KeyEvent.VK_A) {
           //LogUtil.log("[EVENT]: request player to move left");
-          player.requestToMoveLeft();
+          firstPlayer.requestToMoveLeft();
         } else if (key == KeyEvent.VK_D) {
           //LogUtil.log("[EVENT]: request player to move right");
-          player.requestToMoveRight();
+          firstPlayer.requestToMoveRight();
         } else if (key == KeyEvent.VK_W) {
           //LogUtil.log("[EVENT]: request player to move up");
-          player.requestToMoveUp();
+          firstPlayer.requestToMoveUp();
         } else if (key == KeyEvent.VK_S) {
           //LogUtil.log("[EVENT]: request player to move down");
-          player.requestToMoveDown();
+          firstPlayer.requestToMoveDown();
         } else if (key == KeyEvent.VK_SPACE) {
           LogUtil.log("[EVENT]: fire bullet");
-          player.fire();
-        } else if (key == KeyEvent.VK_Q && timer.isRunning()) {
+          firstPlayer.fire();
+        } else if (key == KeyEvent.VK_P && timer.isRunning()) {
           isGameRunning = false;
-
-          // process log
           LogUtil.log("[EVENT]: pause game");
           FileUtil.clearFile(logFile);
-          LogUtil.dumpLog(logFile);
-          LogUtil.clearLogTrace();
+          LogUtil.writeAndClearLog(logFile);
+        } else if (key == KeyEvent.VK_Q && timer.isRunning()) {
+          LogUtil.log("[EVENT]: quit game");
+          FileUtil.clearFile(logFile);
+          LogUtil.writeAndClearLog(logFile);
+          System.exit(0);
         }
       } else {
         if (key == KeyEvent.VK_ENTER) {
           isGameRunning = true;
-          initialize();
+          reset();
         }
       }
     }

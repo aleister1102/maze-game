@@ -38,18 +38,18 @@ public class Bullet extends Actor {
   }
 
   @Override
-  public void move(Graphics2D graphics, ImageObserver observer, Maze maze) {
+  public void move(Graphics2D graphics, ImageObserver imageObserver, Maze maze) {
     boolean notMoving = this.isNotMoving();
     boolean isOutsideTheWall = this.isOutsideTheWall();
     boolean hasInvalidMoveRequest = maze.hasInvalidMoveRequest(this);
-    LogUtil.log("[DEBUG-bullet.move]: bullet %s hasInvalidMoveRequest=%s", this.id, hasInvalidMoveRequest);
+    //LogUtil.log("[DEBUG-bullet.move]: bullet %s hasInvalidMoveRequest=%s", this.id, hasInvalidMoveRequest);
 
     if (notMoving) return;
     if (hasInvalidMoveRequest || isOutsideTheWall) hasCollisionWithWall = true;
     else {
       updateDeltaBasedOnMoveRequest(maze);
       updatePosition();
-      draw(graphics, observer);
+      draw(graphics, imageObserver);
     }
     if (hasCollisionWithWall) this.stopMoving();
   }
@@ -62,17 +62,17 @@ public class Bullet extends Actor {
   }
 
   @Override
-  public void draw(Graphics2D graphics2D, ImageObserver observer) {
+  public void draw(Graphics2D graphics2D, ImageObserver imageObserver) {
     if (hasCollisionWithWall) return;
 
     if (isMovingLeft()) {
-      graphics2D.drawImage(left, x + 1, y + 1, observer);
+      graphics2D.drawImage(left, x + 1, y + 1, imageObserver);
     } else if (isMovingRight()) {
-      graphics2D.drawImage(right, x + 1, y + 1, observer);
+      graphics2D.drawImage(right, x + 1, y + 1, imageObserver);
     } else if (isMovingUp()) {
-      graphics2D.drawImage(up, x + 1, y + 1, observer);
+      graphics2D.drawImage(up, x + 1, y + 1, imageObserver);
     } else if (isMovingDown()) {
-      graphics2D.drawImage(down, x + 1, y + 1, observer);
+      graphics2D.drawImage(down, x + 1, y + 1, imageObserver);
     }
     graphics2D.setColor(Color.magenta);
     graphics2D.drawString(String.valueOf(id), x + 3, y + 1);

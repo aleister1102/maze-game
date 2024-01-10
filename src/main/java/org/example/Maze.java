@@ -219,25 +219,25 @@ public class Maze {
     short belowBlock = getScreenDataAtIndex(blockIndex + COLUMNS);
     boolean currentPositionIsDivisibleByBlockSize = isCurrentPositionDivisibleByBlockSize(actor);
 
-    LogUtil.log("[DEBUG-isHavingValidMoveRequest]: current position of [%s@%s]: (%d, %d)",
-      actorName, actorId, actor.getX(), actor.getY());
+    //LogUtil.log("[DEBUG-hasValidMoveRequest]: current position of [%s@%s]: (%d, %d)",
+    //  actorName, actorId, actor.getX(), actor.getY());
     if (!currentPositionIsDivisibleByBlockSize) return true;
 
     if (actor.isMovingLeft() && hasLeftBorder(currentBlock)) {
       // move to left should not have left border
-      LogUtil.log("[DEBUG-isHavingValidMoveRequest]: can not move [%s@%s] to left because there is left border", actorName, actorId);
+      //LogUtil.log("[DEBUG-hasValidMoveRequest]: can not move [%s@%s] to left because there is left border", actorName, actorId);
       return false;
     } else if (actor.isMovingUp() && hasTopBorder(currentBlock)) {
       // move to top should not have top border
-      LogUtil.log("[DEBUG-isHavingValidMoveRequest]: can not move [%s@%s] to top because there is top border", actorName, actorId);
+      //LogUtil.log("[DEBUG-hasValidMoveRequest]: can not move [%s@%s] to top because there is top border", actorName, actorId);
       return false;
     } else if (actor.isMovingRight() && (hasRightBorder(currentBlock) || hasLeftBorder(nextBlock))) {
       // move to right should not have right border
-      LogUtil.log("[DEBUG-isHavingValidMoveRequest]: can not move [%s@%s] to right because there is right border", actorName, actorId);
+      //LogUtil.log("[DEBUG-hasValidMoveRequest]: can not move [%s@%s] to right because there is right border", actorName, actorId);
       return false;
     } else if (actor.isMovingDown() && (hasBottomBorder(currentBlock) || hasTopBorder(belowBlock))) {
       // move to bottom should not have bottom border
-      LogUtil.log("[DEBUG-isHavingValidMoveRequest]: can not move [%s@%s] to bottom because there is bottom border", actorName, actorId);
+      //LogUtil.log("[DEBUG-hasValidMoveRequest]: can not move [%s@%s] to bottom because there is bottom border", actorName, actorId);
       return false;
     }
     return true;
@@ -249,6 +249,12 @@ public class Maze {
 
   protected int computeBlockIndexFromCurrentPosition(Actor actor) {
     return actor.getX() / BLOCK_SIZE + COLUMNS * (actor.getY() / BLOCK_SIZE);
+  }
+
+  protected Pair<Integer, Integer> computePositionFromBlockIndex(int blockIndex) {
+    int x = blockIndex % COLUMNS * BLOCK_SIZE;
+    int y = blockIndex / COLUMNS * BLOCK_SIZE;
+    return new Pair<>(x, y);
   }
 
 }

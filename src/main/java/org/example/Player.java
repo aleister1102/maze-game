@@ -1,8 +1,11 @@
 package org.example;
 
 
+import java.awt.Color;
+import java.awt.Font;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -79,6 +82,14 @@ public class Player extends Actor {
     return this.cumulativeDeltaX < Maze.BLOCK_SIZE && this.cumulativeDeltaY < Maze.BLOCK_SIZE;
   }
 
+  @Override
+  protected void draw(Graphics2D graphics2D, ImageObserver imageObserver) {
+    super.draw(graphics2D, imageObserver);
+    graphics2D.setColor(Color.GREEN);
+    graphics2D.setFont(new Font("Arial", Font.BOLD, 14));
+    graphics2D.drawString(String.valueOf(id), x + 9, y + 16);
+  }
+
   public void moveBullets(Graphics2D graphics2D, ImageObserver imageObserver, Maze maze) {
     for (Bullet bullet : bullets) {
       if (!bullet.isMoving()) continue;
@@ -96,7 +107,6 @@ public class Player extends Actor {
 
     Bullet bullet = getBulletToFire();
     LogUtil.log("[DEBUG-fire]: bullet to fire: %s", bullet.getId());
-    LogUtil.log("[DEBUG-fire]: reset bullet position");
     bullet.setX(this.x);
     bullet.setY(this.y);
     bullet.resetCumulativeDelta();
@@ -153,6 +163,76 @@ public class Player extends Actor {
 
     }
     return true;
+  }
+
+  public static List<Player> randomPlayers(Maze maze, int numberOfPlayers) {
+    List<Player> randomPlayers = new LinkedList<>();
+    for (int i = 0; i < numberOfPlayers; i++) {
+      Player randomPlayer = new Player();
+      randomPlayer.setId(i);
+      randomPlayer.randomPosition(maze, randomPlayers);
+      randomPlayer.randomDirection();
+      randomPlayers.add(randomPlayer);
+    }
+    return randomPlayers;
+  }
+
+  private void randomPosition(Maze maze, List<Player> players) {
+    Random random = new Random();
+    boolean isAtSamePlaceWithOtherPlayers = true;
+    while (isAtSamePlaceWithOtherPlayers) {
+      int randomBlockIndex = random.nextInt(Maze.ROWS * Maze.COLUMNS);
+      Pair<Integer, Integer> position = maze.computePositionFromBlockIndex(randomBlockIndex);
+      this.x = position.getFirst();
+      this.y = position.getSecond();
+      isAtSamePlaceWithOtherPlayers = isAtSamePlaceWithOtherPlayers(players);
+    }
+  }
+
+  private boolean isAtSamePlaceWithOtherPlayers(List<Player> players) {
+    for (Player player : players) {
+      if (player.equals(this)) continue;
+      if (player.getX() == this.x && player.getY() == this.y) return true;
+    }
+    return false;
+  }
+
+  private void randomDirection() {
+    Random random = new Random();
+    int randomDirection = random.nextInt(4);
+
+    if (randomDirection == 0) {
+      this.direction = Direction.LEFT;
+    } else if (randomDirection == 1) {
+      this.direction = Direction.RIGHT;
+    } else if (randomDirection == 2) {
+      this.direction = Direction.UP;
+    } else {
+      this.direction = Direction.DOWN;
+    }
+  }
+
+  public static void movePlayersAndTheirBullets(
+    Graphics2D graphics2D, ImageObserver imageObserver, Maze maze,
+    List<Player> players) {
+    for (Player player : players) {
+      player.move(graphics2D, imageObserver, maze);
+      player.moveBullets(graphics2D, imageObserver, maze);
+    }
+  }
+
+  public String toString() {
+    return String.format(
+      "[Player(id=%s, x=%s, y=%s, direction=%s, isMoving=%s, requestDeltaX=%d, requestDeltaY=%d, cumulativeDeltaX=%d, cumulativeDeltaY=%d)]",
+      this.id,
+      this.x,
+      this.y,
+      this.direction,
+      this.isMoving(),
+      this.requestDeltaX,
+      this.requestDeltaY,
+      this.cumulativeDeltaX,
+      this.cumulativeDeltaY);
   }
 
 }
