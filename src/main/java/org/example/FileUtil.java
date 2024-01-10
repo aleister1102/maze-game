@@ -16,7 +16,7 @@ public class FileUtil {
   private static void createFile(File file) {
     try {
       if (file.createNewFile()) {
-        LogUtil.log("[ERROR-createFile]: file created: %s", file.getName());
+        LogUtil.log("[DEBUG-createFile]: file created: %s", file.getName());
       }
     } catch (IOException e) {
       LogUtil.log("[ERROR-createFile]: error(s) occurred while creating file",

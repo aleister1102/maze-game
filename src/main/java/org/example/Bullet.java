@@ -33,7 +33,6 @@ public class Bullet extends Actor {
   }
 
   private void loadImages() {
-    // TODO: adjust image to fit with a block
     this.down = new ImageIcon("src/main/resources/images/bullet-down.png").getImage();
     this.up = new ImageIcon("src/main/resources/images/bullet-up.png").getImage();
     this.left = new ImageIcon("src/main/resources/images/bullet-left.png").getImage();

@@ -37,26 +37,26 @@ public class GamePanel extends JPanel implements ActionListener {
   private int repeatedKeyCount;
   private boolean isGameRunning = false;
 
-  public GamePanel() {
+  public GamePanel(File logFile) {
 
-    initialize();
+    initialize(logFile);
 
     super.addKeyListener(new TAdapter());
     super.setFocusable(true);
   }
 
-  private void initialize() {
+  private void initialize(File logFile) {
 
-    dimension = new Dimension(MazeGame.screenWidth, MazeGame.screenHeight);
-    textFont = new Font("Arial", Font.BOLD, 14);
-    maze = new Maze();
+    this.dimension = new Dimension(MazeGame.screenWidth, MazeGame.screenHeight);
+    this.textFont = new Font("Arial", Font.BOLD, 14);
+    this.maze = new Maze();
     players = Player.randomPlayers(NUMBER_OF_PLAYERS);
-    LogUtil.log("[DEBUG]: players:\n" + players.stream().map(Player::toString).collect(Collectors.joining("\n")));
-    timer = new Timer(40, this);
-    timer.start();
-    logFile = FileUtil.createFile(LogUtil.LOG_FILE);
-    previousKey = 0;
-    repeatedKeyCount = 0;
+    //LogUtil.log("[DEBUG]: players:\n" + players.stream().map(Player::toString).collect(Collectors.joining("\n")));
+    this.timer = new Timer(40, this);
+    this.timer.start();
+    this.logFile = logFile;
+    this.previousKey = 0;
+    this.repeatedKeyCount = 0;
   }
 
   public void paintComponent(Graphics g) {

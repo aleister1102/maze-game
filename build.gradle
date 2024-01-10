@@ -1,6 +1,5 @@
 plugins {
     id 'java'
-    id 'application'
 }
 
 group = 'org.example'
@@ -22,12 +21,17 @@ dependencies {
     implementation 'org.apache.commons:commons-lang3:3.13.0'
 }
 
-application {
-    mainClass = 'org.example.MazeGame'
+//application {
+//    mainClass = 'org.example.MazeGame'
+//}
+
+ext {
+    port = project.hasProperty("port") ? project.property("port") : "0"
 }
 
 // Reference: https://docs.gradle.org/current/javadoc/org/gradle/process/JavaExecSpec.html
-//tasks.register('run', JavaExec) {
-//    classpath = sourceSets.main.runtimeClasspath
-//    getMainClass().set('org.example.MazeGame')
-//}
+tasks.register('run', JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    getMainClass().set('org.example.MazeGame')
+    args(port)
+}

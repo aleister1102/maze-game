@@ -8,7 +8,8 @@ import java.util.Set;
 
 public class LogUtil {
 
-  public static final String LOG_FILE = "src/main/resources/logs/logs.txt";
+  public static final String LOG_DIRECTORY = "src/main/resources/logs/";
+  public static final String LOG_FILE = LOG_DIRECTORY + "logs.txt";
   private static final String DATE_FORMAT = "yyyy/MM/dd:HH:mm:ss.SSS";
   private static final Set<String> logTrace = new LinkedHashSet<>();
 
