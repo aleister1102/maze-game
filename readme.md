@@ -67,5 +67,3 @@ Dự định sẽ đảm bảo thứ tự bằng cách sử dụng thuật toán
 
 ## Tham khảo
 - https://www.youtube.com/watch?v=ATz7bIqOjiA
-- https://youtu.be/Wcvqnx14cZA?si=7QupELX660v4dJ7
-- https://pygamezero-pacman.readthedocs.io/en/latest/index.html
