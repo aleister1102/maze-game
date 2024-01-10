@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.File;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 import lombok.Data;
@@ -27,6 +28,7 @@ public class GamePanel extends JPanel implements ActionListener {
   private Maze maze;
   private Pacman pacman;
   private Timer timer;
+  private File logFile;
 
   public GamePanel() {
 
@@ -44,6 +46,7 @@ public class GamePanel extends JPanel implements ActionListener {
     pacman = new Pacman();
     timer = new Timer(40, this);
     timer.start();
+    logFile = FileUtil.createFile(LogUtil.LOG_FILE);
   }
 
   public void paintComponent(Graphics g) {
@@ -79,11 +82,9 @@ public class GamePanel extends JPanel implements ActionListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-
       int key = e.getKeyCode();
 
       if (isGameRunning) {
-
         if (key == KeyEvent.VK_A) {
           pacman.requestToMoveLeft();
         } else if (key == KeyEvent.VK_D) {
@@ -96,9 +97,9 @@ public class GamePanel extends JPanel implements ActionListener {
           pacman.fire();
         } else if (key == KeyEvent.VK_Q && timer.isRunning()) {
           isGameRunning = false;
+          FileUtil.clearFile(logFile);
+          LogUtil.dumpLog(logFile);
         }
-
-        pacman.resetCumulativeDelta();
       } else {
         if (key == KeyEvent.VK_ENTER) {
           isGameRunning = true;
