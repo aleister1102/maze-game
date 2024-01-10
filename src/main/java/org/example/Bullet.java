@@ -36,18 +36,16 @@ public class Bullet extends Actor {
   @Override
   public void move(Graphics2D graphics, ImageObserver observer, Maze maze) {
     boolean isMoving = this.isMoving();
-    boolean deltaChanged = updateDeltaBasedOnMoveRequest(maze);
-    boolean canMoveMore = this.canMoveMore();
+    boolean hasValidMoveRequest = maze.isHavingValidMoveRequest(this);
 
-    if (!isMoving) draw(graphics, observer);
-    else if (!deltaChanged) draw(graphics, observer);
-    else if (canMoveMore) drawAtNewPosition(graphics, observer);
-
-  }
-
-  @Override
-  public boolean canMoveMore() {
-    return this.cumulativeDeltaX < Maze.BLOCK_SIZE * 3 && this.cumulativeDeltaY < Maze.BLOCK_SIZE * 3;
+    if (!isMoving) return;
+    if (!hasValidMoveRequest) hasCollisionWithWall = true;
+    else {
+      updateDeltaBasedOnMoveRequest(maze);
+      updatePosition();
+      draw(graphics, observer);
+    }
+    if (hasCollisionWithWall) this.stopMoving();
   }
 
   @Override
