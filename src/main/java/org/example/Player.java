@@ -3,9 +3,11 @@ package org.example;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -173,13 +175,21 @@ public class Player extends Actor {
     for (int i = 0; i < numberOfPlayers; i++) {
       Player randomPlayer = new Player();
       randomPlayer.setId(i);
-      randomPlayer.randomPosition(randomPlayers);
-      randomPlayer.randomDirection();
+      randomPlayer.randomPlayerState(randomPlayer, randomPlayers);
       randomPlayers.add(randomPlayer);
     }
     return randomPlayers;
   }
 
+  private void randomPlayerState(Player player, List<Player> players) {
+    boolean canNotRandomDirectionFromCurrentPosition = true;
+    while (canNotRandomDirectionFromCurrentPosition) {
+      player.randomPosition(players);
+      canNotRandomDirectionFromCurrentPosition = !player.randomDirection();
+    }
+  }
+
+  //* FEAT5: random player at random position with random direction. If that position is opposite to wall, random again
   private void randomPosition(List<Player> players) {
     Random random = new Random();
     boolean isAtSamePlaceWithOtherPlayers = true;
@@ -200,19 +210,36 @@ public class Player extends Actor {
     return false;
   }
 
-  private void randomDirection() {
+  private boolean randomDirection() {
     Random random = new Random();
-    int randomDirection = random.nextInt(4);
+    Set<Direction> randomDirections = new HashSet<>();
+    boolean isOppositeToWall = true;
 
-    if (randomDirection == 0) {
-      this.direction = Direction.LEFT;
-    } else if (randomDirection == 1) {
-      this.direction = Direction.RIGHT;
-    } else if (randomDirection == 2) {
-      this.direction = Direction.UP;
-    } else {
-      this.direction = Direction.DOWN;
+    while (isOppositeToWall) {
+      int randomDirection = random.nextInt(4);
+      if (randomDirection == 0) {
+        this.direction = Direction.LEFT;
+      } else if (randomDirection == 1) {
+        this.direction = Direction.RIGHT;
+      } else if (randomDirection == 2) {
+        this.direction = Direction.UP;
+      } else {
+        this.direction = Direction.DOWN;
+      }
+
+      isOppositeToWall = Maze.isOppositeToWall(this);
+      LogUtil.log("[DEBUG-randomDirection]: current position (%s, %s) of player %s is opposite to wall? %s",
+        this.computeBlockIndexFromCurrentPosition(), this.direction, this.id, isOppositeToWall);
+
+      LogUtil.log("[DEBUG-randomDirection]: random direction = " + this.direction);
+      randomDirections.add(this.direction);
+      if (randomDirections.size() == Direction.values().length) {
+        LogUtil.log("[DEBUG-randomDirection]: all of directions are invalid");
+        return false; // all of directions are invalid
+      }
     }
+
+    return true;
   }
 
   public static void movePlayersAndTheirBullets(
@@ -226,10 +253,11 @@ public class Player extends Actor {
 
   public String toString() {
     return String.format(
-      "[Player(id=%s, x=%s, y=%s, direction=%s, isMoving=%s, requestDeltaX=%d, requestDeltaY=%d, cumulativeDeltaX=%d, cumulativeDeltaY=%d)]",
+      "[Player(id=%s, x=%s, y=%s, blockIndex=%s, direction=%s, isMoving=%s, requestDeltaX=%d, requestDeltaY=%d, cumulativeDeltaX=%d, cumulativeDeltaY=%d)]",
       this.id,
       this.x,
       this.y,
+      computeBlockIndexFromCurrentPosition(),
       this.direction,
       this.isMoving(),
       this.requestDeltaX,

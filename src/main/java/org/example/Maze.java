@@ -57,21 +57,21 @@ public class Maze {
   //};
 
   private short[] mapData;
-  private short[] screenData;
-
+  private static short[] screenData;
   private Font indexFont;
+
 
   public Maze() {
 
     mapData = new short[ROWS * COLUMNS];
     screenData = new short[ROWS * COLUMNS];
-    indexFont = new Font("Arial", Font.BOLD, 10);
+    indexFont = new Font("Arial", Font.BOLD, 8);
 
     generateRandomMaze(mapData);
     copyMapDataToScreenData();
   }
 
-  public short getScreenDataAtIndex(int index) {
+  public static short getScreenDataAtIndex(int index) {
 
     if (index > screenData.length - 1 || index < 0) {
       return 0;
@@ -139,7 +139,7 @@ public class Maze {
     short blockIndex = 0;
     for (int y = 0; y < SCREEN_HEIGHT; y += BLOCK_SIZE) {
       for (int x = 0; x < SCREEN_WIDTH; x += BLOCK_SIZE) {
-        short block = this.getScreenDataAtIndex(blockIndex);
+        short block = getScreenDataAtIndex(blockIndex);
 
         this.drawWall(graphics2D, x, y, block);
         this.drawBlockIndex(graphics2D, x, y, blockIndex);
@@ -172,22 +172,22 @@ public class Maze {
     }
   }
 
-  private boolean hasLeftBorder(short block) {
+  private static boolean hasLeftBorder(short block) {
 
     return (block & 1) != 0;
   }
 
-  private boolean hasTopBorder(short block) {
+  private static boolean hasTopBorder(short block) {
 
     return (block & 2) != 0;
   }
 
-  private boolean hasRightBorder(short block) {
+  private static boolean hasRightBorder(short block) {
 
     return (block & 4) != 0;
   }
 
-  private boolean hasBottomBorder(short block) {
+  private static boolean hasBottomBorder(short block) {
 
     return (block & 8) != 0;
   }
@@ -263,6 +263,7 @@ public class Maze {
     return true;
   }
 
+  //* FEAT7: two players can not be at the same block
   private boolean isThereAPlayerAtBlockIndex(int blockIndexToCheck) {
     List<Player> players = GamePanel.players;
 
@@ -277,6 +278,24 @@ public class Maze {
     int x = blockIndex % COLUMNS * BLOCK_SIZE;
     int y = blockIndex / COLUMNS * BLOCK_SIZE;
     return new Pair<>(x, y);
+  }
+
+  public static boolean isOppositeToWall(Actor actor) {
+    int id = actor.getId();
+    int blockIndex = actor.computeBlockIndexFromCurrentPosition();
+    short currentBlock = getScreenDataAtIndex(blockIndex);
+    short previousBlock = getScreenDataAtIndex(blockIndex - 1);
+    short nextBlock = getScreenDataAtIndex(blockIndex + 1);
+    short aboveBlock = getScreenDataAtIndex(blockIndex - COLUMNS);
+    short belowBlock = getScreenDataAtIndex(blockIndex + COLUMNS);
+
+    if (actor.isMovingLeft() && (hasLeftBorder(currentBlock) || hasRightBorder(previousBlock))) {
+      return true;
+    } else if (actor.isMovingUp() && (hasTopBorder(currentBlock) || hasBottomBorder(aboveBlock))) {
+      return true;
+    } else if (actor.isMovingRight() && ((hasRightBorder(currentBlock) || hasLeftBorder(nextBlock)))) {
+      return true;
+    } else return actor.isMovingDown() && ((hasBottomBorder(currentBlock) || hasTopBorder(belowBlock)));
   }
 
 }

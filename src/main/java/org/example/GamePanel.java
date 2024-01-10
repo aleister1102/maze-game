@@ -60,7 +60,6 @@ public class GamePanel extends JPanel implements ActionListener {
   }
 
   private void reset() {
-    maze = new Maze();
     previousKey = 0;
     repeatedKeyCount = 0;
   }
