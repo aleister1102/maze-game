@@ -12,8 +12,7 @@ import java.awt.image.ImageObserver;
 @EqualsAndHashCode(callSuper = true)
 public class Pacman extends Actor {
 
-  private final int INITIAL_SPEED = Actor.VALID_SPEEDS[3];
-
+  private final int INITIAL_SPEED = 5;
   private Bullet bullet;
 
   public Pacman() {
@@ -44,60 +43,56 @@ public class Pacman extends Actor {
     this.bullet = new Bullet(this);
   }
 
-  // TODO(BUG): sometimes can not move
   @Override
   public void move(Graphics2D graphics2D, ImageObserver imageObserver, Maze maze) {
     boolean isMoving = this.isMoving();
-    boolean hasValidMoveRequest = updateDeltaBasedOnMoveRequest(maze);
+    boolean hasValidMoveRequest = maze.isHavingValidMoveRequest(this);
+    LogUtil.log("[DEBUG-move]: hasValidMoveRequest = " + hasValidMoveRequest);
     boolean canMoveMore = this.canMoveMore();
-
-    try {
-      Thread.sleep(100);
-      System.out.println("x: " + this.x + ", y: " + this.y);
-      System.out.println("move direction: " + this.direction);
-      System.out.println("Pacman::isMoving: " + isMoving);
-      System.out.println("Pacman::hasValidMoveRequest: " + hasValidMoveRequest);
-      System.out.println("Pacman::canMoveMore: " + canMoveMore);
-      System.out.println("-----------------------------------");
-    } catch (InterruptedException ignored) {
-    }
+    LogUtil.log("[DEBUG-move]: canMoveMore = " + canMoveMore);
 
     if (!isMoving || !hasValidMoveRequest) {
-      draw(graphics2D, imageObserver); // do not draw at new position if is not moving or has invalid move request
+      // do not draw at new position if is not moving or has invalid move request
+      draw(graphics2D, imageObserver);
+      this.resetCumulativeDelta();
     } else if (canMoveMore) {
-      drawAtNewPosition(graphics2D, imageObserver); // can not move if has not moved at least 1 block
+      // can not move if has not moved at least 1 block
+      updateDeltaBasedOnMoveRequest(maze);
+      updatePosition();
+      draw(graphics2D, imageObserver);
+      LogUtil.log("[DEBUG-move]: cumulativeDeltaX = " + this.cumulativeDeltaX);
+      LogUtil.log("[DEBUG-move]: cumulativeDeltaY = " + this.cumulativeDeltaY);
     } else {
-      this.stopMoving(); // stop moving if has moved 1 block
+      // stop moving if has moved 1 block
+      this.stopMoving();
     }
   }
 
-  @Override
-  public boolean canMoveMore() {
+  private boolean canMoveMore() {
 
     return this.cumulativeDeltaX < Maze.BLOCK_SIZE && this.cumulativeDeltaY < Maze.BLOCK_SIZE;
   }
 
   public void fire() {
     // TODO(FEAT): prevent firing when bullet has not moved at least 4 block
-    //if(!bullet.canMoveMore()) return;
-
+    bullet.setX(this.x);
+    bullet.setY(this.y);
     bullet.setHasCollisionWithWall(false);
 
+   LogUtil.log("[EVENT]: firing bullet");
     if (isMovingLeft()) {
-      bullet.setX(this.x - Maze.BLOCK_SIZE);
-      bullet.setY(this.y);
       bullet.requestToMoveLeft();
     } else if (isMovingRight()) {
-      bullet.setX(this.x + Maze.BLOCK_SIZE);
+      bullet.setX(this.x);
       bullet.setY(this.y);
       bullet.requestToMoveRight();
     } else if (isMovingUp()) {
       bullet.setX(this.x);
-      bullet.setY(this.y - Maze.BLOCK_SIZE);
+      bullet.setY(this.y);
       bullet.requestToMoveUp();
     } else if (isMovingDown()) {
       bullet.setX(this.x);
-      bullet.setY(this.y + Maze.BLOCK_SIZE);
+      bullet.setY(this.y);
       bullet.requestToMoveDown();
     }
   }
